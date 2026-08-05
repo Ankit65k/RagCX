@@ -1,0 +1,116 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum ProcessingStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum UploadStatus {
+  UPLOADING
+  UPLOADED
+  DELETED
+}
+
+model User {
+  id           String        @id @default(uuid()) @db.Uuid
+  email        String        @unique
+  passwordHash String
+  role         Role          @default(USER)
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  sessions     Session[]
+  documents    Document[]
+  chatSessions ChatSession[]
+
+  @@map("users")
+}
+
+model Session {
+  id                 String   @id @default(uuid()) @db.Uuid
+  userId             String   @db.Uuid
+  hashedRefreshToken String   @unique
+  deviceName         String?
+  deviceType         String?
+  browser            String?
+  operatingSystem    String?
+  ipAddress          String?
+  userAgent          String?  @db.Text
+  expiresAt          DateTime
+  lastActivity       DateTime @default(now())
+  isRevoked          Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt, isRevoked])
+  @@map("sessions")
+}
+
+model Document {
+  id                String           @id @default(uuid()) @db.Uuid
+  originalFileName  String
+  storedFileName    String
+  checksum          String?
+  mimeType          String
+  fileSize          Int
+  totalPages        Int              @default(0)
+  uploadStatus      UploadStatus     @default(UPLOADING)
+  processingStatus  ProcessingStatus @default(PENDING)
+  uploadedBy        String           @db.Uuid
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  user User @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
+
+  @@index([uploadedBy])
+  @@index([processingStatus])
+  @@map("documents")
+}
+
+model ChatSession {
+  id                String        @id @default(uuid()) @db.Uuid
+  sessionIdentifier String        @unique
+  title             String
+  userId            String        @db.Uuid
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  messages          ChatMessage[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id            String      @id @default(uuid()) @db.Uuid
+  chatSessionId String      @db.Uuid
+  role          String
+  message       String      @db.Text
+  sources       Json?
+  tokenUsage    Json?
+  createdAt     DateTime    @default(now())
+
+  chatSession ChatSession @relation(fields: [chatSessionId], references: [id], onDelete: Cascade)
+
+  @@index([chatSessionId])
+  @@index([createdAt])
+  @@map("chat_messages")
+}
