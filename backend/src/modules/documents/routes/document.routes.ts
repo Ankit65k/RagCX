@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { requireAuth, requireRole } from '../../../middleware/auth/auth.middleware.js';
+import { requireAuth, requireRole, requirePermission } from '../../../middleware/auth/auth.middleware.js';
 import { uploadMiddleware } from '../../../infrastructure/storage/middleware/upload.middleware.js';
+import { Permission } from '../../../modules/auth/constants/auth.constants.js';
 import {
   UploadDocumentController,
   GetDocumentController,
@@ -24,7 +25,7 @@ const reprocessCtrl = new ReprocessDocumentController();
 /**
  * Document management routes protected by requireAuth.
  */
-router.post('/', requireAuth, requireRole('ADMIN'), uploadMiddleware, uploadCtrl.handle.bind(uploadCtrl));
+router.post('/', requireAuth, requirePermission(Permission.DOCUMENTS_UPLOAD), uploadMiddleware, uploadCtrl.handle.bind(uploadCtrl));
 router.get('/', requireAuth, listCtrl.handle.bind(listCtrl));
 router.get('/search', requireAuth, searchCtrl.handle.bind(searchCtrl));
 router.get('/:id', requireAuth, getCtrl.handle.bind(getCtrl));
