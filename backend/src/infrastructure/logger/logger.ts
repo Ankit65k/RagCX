@@ -11,14 +11,8 @@ export const logger = pino({
     };
   },
   timestamp: pino.stdTimeFunctions.isoTime,
-  transport: appConfig.env === 'development' ? {
-    target: 'pino-pretty',
-    options: {
-      colorize: true,
-      translateTime: 'yyyy-mm-dd HH:MM:ss Z',
-      ignore: 'pid,hostname,service,environment',
-    },
-  } : undefined,
+  // Note: pino-pretty disabled due to ESM compatibility issues with Node.js 26
+  // TODO: Re-enable when pino-pretty supports Node.js 26 ESM properly
 });
 
 export default logger;

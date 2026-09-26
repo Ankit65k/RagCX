@@ -1,8 +1,14 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
 import type { IStorageProvider, StorageProvider } from './interfaces/storage-provider.interface.js';
 import { LocalStorageProvider } from './providers/local-storage.provider.js';
 import { StorageError } from './errors/storage.errors.js';
 import { storageConfig } from '../../config/storage.config.js';
 import logger from '../logger/logger.js';
+
+// Get the directory name in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Factory
@@ -38,7 +44,13 @@ export class StorageFactory {
 
     switch (provider) {
       case 'local':
-        return new LocalStorageProvider(storageConfig.localPath);
+        // Resolve relative path to absolute path from project root
+        const absoluteLocalPath = path.isAbsolute(storageConfig.localPath)
+          ? storageConfig.localPath
+          : path.resolve(process.cwd(), storageConfig.localPath);
+
+        logger.info({ localPath: absoluteLocalPath }, 'Using local storage path');
+        return new LocalStorageProvider(absoluteLocalPath);
 
       case 's3':
         /**

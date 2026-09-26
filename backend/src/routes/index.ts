@@ -5,14 +5,14 @@ import { adminRoutes } from './admin.routes.js';
 
 const router = Router();
 
-// Mount public routes at root or specific prefix
-router.use('/', publicRoutes);
+// Mount public routes at /v1
+router.use('/v1', publicRoutes);
 
 // Mount protected routes (would apply Auth middleware here globally if desired)
-router.use('/', protectedRoutes);
+router.use('/v1', protectedRoutes);
 
 // Mount admin routes
-router.use('/admin', adminRoutes);
+router.use('/v1/admin', adminRoutes);
 
 export const routes = router;
 export default routes;

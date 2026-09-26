@@ -11,7 +11,6 @@ import { FileUp, Info } from "lucide-react";
 
 export default function DocumentUploadPage() {
   const { user } = useAuthStore();
-  const isAdmin = user?.role === "ADMIN";
   const { uploadFile, uploadQueue, clearQueueItem } = useDocumentUpload();
   const [localQueue, setLocalQueue] = useState<Record<string, UploadProgressInfo>>({});
   const [historyList, setHistoryList] = useState<UploadProgressInfo[]>([]);
@@ -31,7 +30,7 @@ export default function DocumentUploadPage() {
     setLocalQueue((prev) => {
       if (!prev[fileKey]) return prev;
       const updatedItem = { ...prev[fileKey], status };
-      
+
       // If reached terminal status, push to history
       if (status === "COMPLETED" || status === "FAILED") {
         setHistoryList((hist) => {
@@ -58,19 +57,6 @@ export default function DocumentUploadPage() {
       return copy;
     });
   };
-
-  if (!isAdmin) {
-    return (
-      <ProtectedRoute>
-        <div className="mx-auto max-w-7xl text-center py-20 animate-in fade-in duration-300">
-          <h2 className="text-xl font-bold text-destructive">Access Denied</h2>
-          <p className="text-sm text-muted-foreground mt-2 font-medium">
-            Only administrators are permitted to access the document ingestion pipeline.
-          </p>
-        </div>
-      </ProtectedRoute>
-    );
-  }
 
   return (
     <ProtectedRoute>
