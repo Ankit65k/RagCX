@@ -120,3 +120,6 @@ chroma_db/
 
 # Local settings and user files
 .agents/
+
+ai-service/chroma_db/
+ai-service/data/
