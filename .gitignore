@@ -131,3 +131,5 @@ backend/login.json
 ollama-test-payload.json
 register_user.py
 scratch/
+
+backend/uploads/
