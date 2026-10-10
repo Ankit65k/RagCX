@@ -133,3 +133,5 @@ register_user.py
 scratch/
 
 backend/uploads/
+
+/*.pdf
