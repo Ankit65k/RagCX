@@ -70,22 +70,23 @@ model Session {
 }
 
 model Document {
-  id                String           @id @default(uuid()) @db.Uuid
-  originalFileName  String
-  storedFileName    String
-  checksum          String?
-  mimeType          String
-  fileSize          Int
-  totalPages        Int              @default(0)
-  chunkCount        Int              @default(0)
-  embeddingCount    Int              @default(0)
-  uploadStatus      UploadStatus     @default(UPLOADING)
-  processingStatus  ProcessingStatus @default(PENDING)
-  uploadedBy        String           @db.Uuid
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
+  id               String           @id @default(uuid()) @db.Uuid
+  originalFileName String
+  storedFileName   String
+  checksum         String?
+  mimeType         String
+  fileSize         Int
+  totalPages       Int              @default(0)
+  chunkCount       Int              @default(0)
+  embeddingCount   Int              @default(0)
+  uploadStatus     UploadStatus     @default(UPLOADING)
+  processingStatus ProcessingStatus @default(PENDING)
+  uploadedBy       String           @db.Uuid
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 
-  user User @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
+  user              User                @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
+  SuggestedQuestion SuggestedQuestion[]
 
   @@index([uploadedBy])
   @@index([processingStatus])
@@ -108,13 +109,13 @@ model ChatSession {
 }
 
 model ChatMessage {
-  id            String      @id @default(uuid()) @db.Uuid
-  chatSessionId String      @db.Uuid
+  id            String   @id @default(uuid()) @db.Uuid
+  chatSessionId String   @db.Uuid
   role          String
-  message       String      @db.Text
+  message       String   @db.Text
   sources       Json?
   tokenUsage    Json?
-  createdAt     DateTime    @default(now())
+  createdAt     DateTime @default(now())
 
   chatSession ChatSession @relation(fields: [chatSessionId], references: [id], onDelete: Cascade)
 
@@ -124,13 +125,13 @@ model ChatMessage {
 }
 
 model SuggestedQuestion {
-  id              String           @id @default(uuid()) @db.Uuid
-  documentId      String           @db.Uuid
-  question        String           @db.Text
+  id              String             @id @default(uuid()) @db.Uuid
+  documentId      String             @db.Uuid
+  question        String             @db.Text
   confidence      QuestionConfidence
-  relatedPages    Json?            @db.Json
-  relatedChunkIds String[]         @db.VarChar
-  createdAt       DateTime         @default(now())
+  relatedPages    Json?              @db.Json
+  relatedChunkIds String[]           @db.VarChar
+  createdAt       DateTime           @default(now())
 
   document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
