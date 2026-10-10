@@ -123,3 +123,11 @@ chroma_db/
 
 ai-service/chroma_db/
 ai-service/data/
+
+backend/uploads/
+backend/login.json
+*.backup
+*.backup2
+ollama-test-payload.json
+register_user.py
+scratch/
