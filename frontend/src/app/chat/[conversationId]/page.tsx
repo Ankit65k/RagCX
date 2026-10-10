@@ -5,20 +5,52 @@ import { ProtectedRoute } from "@/features/auth/guards/RouteGuard";
 import ConversationSidebar from "@/features/chat/components/ConversationSidebar";
 import MessageBubble from "@/features/chat/components/MessageBubble";
 import MessageComposer from "@/features/chat/components/MessageComposer";
+import DocumentSelector from "@/features/chat/components/DocumentSelector";
 import { useChatRoom } from "@/features/chat/hooks/useChat";
 import { ChatMessage } from "@/features/chat/api/chatApi";
-import { useParams } from "next/navigation";
+import { useDocumentsQuery } from "@/features/documents/hooks/useDocuments";
+import { useParams, useSearchParams } from "next/navigation";
 import { Loader2, FileText, Compass, AlertTriangle, ShieldCheck } from "lucide-react";
 
 export default function ChatRoomPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const sessionId = params?.conversationId as string;
+  const documentIdFromQuery = searchParams?.get("documentId");
+  const questionFromQuery = searchParams?.get("question");
 
-  const { messages, isLoading, sendMessage, isSending, isTyping } = useChatRoom(sessionId);
+  const { messages, isLoading, sendMessage, isSending, isTyping, selectedDocumentIds, setSelectedDocumentIds } = useChatRoom(sessionId);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Fetch user documents for document selector
+  const { data: documentsResponse, isLoading: isLoadingDocuments } = useDocumentsQuery({
+    page: 1,
+    pageSize: 100,
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  });
+  const documents = documentsResponse?.items || [];
   
   // Track currently active highlighted assistant message for the right panel
   const [activeMessage, setActiveMessage] = useState<ChatMessage | null>(null);
+
+  // Pre-select document from query parameter on initial load
+  useEffect(() => {
+    if (documentIdFromQuery && selectedDocumentIds.length === 0) {
+      setSelectedDocumentIds([documentIdFromQuery]);
+    }
+  }, [documentIdFromQuery]);
+
+  // Auto-send question from query parameter if session is new and has no messages
+  useEffect(() => {
+    if (sessionId === "new" && questionFromQuery && messages.length === 0 && selectedDocumentIds.length > 0) {
+      // Use setTimeout to ensure everything is loaded before sending
+      const timer = setTimeout(() => {
+        sendMessage(questionFromQuery);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [sessionId, questionFromQuery, messages.length, selectedDocumentIds]);
 
   // Sync active message to be the last assistant response automatically
   useEffect(() => {
@@ -49,6 +81,15 @@ export default function ChatRoomPage() {
 
         {/* Column 2: Message Flow & Composer */}
         <div className="flex-1 flex flex-col h-full bg-secondary/5 border-r border-border">
+          {/* Document Selector Header */}
+          <div className="p-4 border-b border-border bg-card/50 backdrop-blur-sm">
+            <DocumentSelector
+              documents={documents}
+              selectedIds={selectedDocumentIds}
+              onSelectionChange={setSelectedDocumentIds}
+            />
+          </div>
+
           {/* Scrollable Message stream */}
           <div ref={scrollContainerRef} className="flex-1 overflow-y-auto divide-y divide-border/25">
             {isLoading ? (

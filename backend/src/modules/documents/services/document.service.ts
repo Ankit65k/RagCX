@@ -35,12 +35,14 @@ import type {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Documents that may be reprocessed. PROCESSED and FAILED are valid
- * reprocess sources; UPLOADING, DELETED are not.
+ * Documents that may be reprocessed. COMPLETED, FAILED, and PENDING are valid
+ * reprocess sources. PENDING is included to allow recovery of stuck documents
+ * that never started processing. UPLOADING and DELETED are not reprocessable.
  */
 const REPROCESSABLE_STATUSES: ReadonlySet<ProcessingStatus> = new Set([
   ProcessingStatus.COMPLETED,
   ProcessingStatus.FAILED,
+  ProcessingStatus.PENDING,
 ]);
 
 // ─────────────────────────────────────────────────────────────────────────────

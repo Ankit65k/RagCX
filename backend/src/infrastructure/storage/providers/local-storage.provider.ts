@@ -215,10 +215,28 @@ export class LocalStorageProvider implements IStorageProvider {
     );
   }
 
+  // ─── generateRelativePath ────────────────────────────────────────────────
+
+  /**
+   * Generates a relative path from the base storage directory.
+   * Used internally by upload() to build the full storage path.
+   *
+   * @param subPath Optional additional path segment after the base.
+   * @returns       Relative path (e.g., "documents/2024/10/04")
+   */
+  private generateRelativePath(subPath?: string): string {
+    return generateStoragePath(subPath);
+  }
+
   // ─── generatePath ────────────────────────────────────────────────────────
 
+  /**
+   * Generates the full storage path (base + relative path).
+   * @param subPath Optional additional path segment after the base.
+   */
   generatePath(subPath?: string): string {
-    return generateStoragePath(subPath);
+    const relativePath = this.generateRelativePath(subPath);
+    return path.join(this._basePath, relativePath);
   }
 
   // ─── generateFilename ────────────────────────────────────────────────────

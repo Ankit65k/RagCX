@@ -47,6 +47,7 @@ export function useChatSessions() {
 export function useChatRoom(sessionId: string) {
   const queryClient = useQueryClient();
   const [isTyping, setIsTyping] = useState(false);
+  const [selectedDocumentIds, setSelectedDocumentIds] = useState<string[]>([]);
 
   const messagesQuery = useQuery({
     queryKey: ["chat", "messages", sessionId],
@@ -57,7 +58,7 @@ export function useChatRoom(sessionId: string) {
   const sendMutation = useMutation({
     mutationFn: (text: string) => {
       setIsTyping(true);
-      return chatApi.sendMessage(sessionId, text);
+      return chatApi.sendMessage(sessionId, text, selectedDocumentIds);
     },
     onMutate: async (text) => {
       // Cancel outgoing refetches
@@ -104,8 +105,14 @@ export function useChatRoom(sessionId: string) {
       if (context?.previousMessages) {
         queryClient.setQueryData(["chat", "messages", sessionId], context.previousMessages);
       }
+      // Better error message based on error type
+      const errorMsg = err?.response?.data?.error?.message || "Request timed out";
+      const isTimeout = err?.response?.status === 504 || errorMsg.includes("timed out");
+
       toast.error("Message Failed", {
-        description: "Failed to transmit prompt. System broker timed out.",
+        description: isTimeout
+          ? "Request took too long (>2 minutes). Check if documents are uploaded or try a simpler question."
+          : errorMsg,
       });
     },
     onSettled: () => {
@@ -119,5 +126,7 @@ export function useChatRoom(sessionId: string) {
     sendMessage: sendMutation.mutate,
     isSending: sendMutation.isPending,
     isTyping,
+    selectedDocumentIds,
+    setSelectedDocumentIds,
   };
 }

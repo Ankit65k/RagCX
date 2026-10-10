@@ -9,9 +9,10 @@ import { toast } from "sonner";
 export interface UploadProgressInfo {
   filename: string;
   progress: number;
-  status: "UPLOADING" | "QUEUED" | "PROCESSING" | "COMPLETED" | "FAILED";
+  status: "UPLOADING" | "QUEUED" | "PROCESSING" | "COMPLETED" | "FAILED" | "DUPLICATE";
   documentId?: string;
   error?: string;
+  existingDocumentId?: string; // Populated when status is DUPLICATE
 }
 
 export function useDocumentUpload() {
@@ -64,7 +65,36 @@ export function useDocumentUpload() {
       queryClient.invalidateQueries({ queryKey: ["documents"] });
     },
     onError: (err: any, { file, fileKey }) => {
-      const errMsg = err?.response?.data?.message || "File upload failed.";
+      const errorData = err?.response?.data?.error;
+      const errorCode = errorData?.code;
+      const errorMessage = errorData?.message;
+
+      // Handle duplicate document error specifically
+      if (errorCode === 'CONFLICT' && errorData?.details?.existingDocumentId) {
+        const existingDocId = errorData.details.existingDocumentId;
+        setUploadQueue((prev) => ({
+          ...prev,
+          [fileKey]: {
+            ...prev[fileKey],
+            status: "DUPLICATE",
+            error: "This document was already uploaded.",
+            existingDocumentId: existingDocId,
+          },
+        }));
+        toast.info("Duplicate Document", {
+          description: `${file.name} was already uploaded. Click to view the existing document.`,
+          duration: 8000,
+          action: {
+            label: "View Document",
+            onClick: () => {
+              window.open(`/documents/${existingDocId}`, '_blank');
+            },
+          },
+        });
+        return;
+      }
+
+      const errMsg = errorMessage || "File upload failed.";
       setUploadQueue((prev) => ({
         ...prev,
         [fileKey]: {

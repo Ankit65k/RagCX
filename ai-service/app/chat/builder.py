@@ -65,10 +65,26 @@ class ResponseBuilder:
     ) -> ChatEventResponse:
         """
         Creates a clean fallback/error response.
+        Provides user-friendly messages based on error type.
         """
+        # Determine user-friendly message based on error
+        error_lower = error_msg.lower()
+        if "no documents" in error_lower or "empty" in error_lower or "not found" in error_lower:
+            user_message = "No documents have been uploaded yet. Please upload documents first to start chatting."
+        elif "timeout" in error_lower or "took too long" in error_lower:
+            user_message = "The request took too long. Please try again with a shorter question."
+        elif "connection" in error_lower or "unavailable" in error_lower:
+            user_message = "Unable to connect to the AI service. Please ensure all services are running."
+        elif "json" in error_lower or "parsing" in error_lower or "validation" in error_lower:
+            user_message = "Error processing response. Please try again."
+            logger.error(f"ResponseBuilder: JSON/Validation error - Full details: {error_msg}")
+        else:
+            user_message = "I encountered an error processing your request. Please try again."
+            logger.error(f"ResponseBuilder: Unexpected error - Full details: {error_msg}")
+
         payload = ChatResponsePayload(
             conversationId=request.conversationId,
-            answer="I encountered an internal error processing your request. Please try again.",
+            answer=user_message,
             sources=[],
             confidence="LOW",
             executionTime=round(execution_time_ms, 2),

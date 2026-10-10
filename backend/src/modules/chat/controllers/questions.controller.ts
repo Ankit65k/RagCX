@@ -32,6 +32,35 @@ export class QuestionsController {
           res.status(403).json({ message: 'Access denied to this document' });
           return;
         }
+
+        // Check document processing status
+        if (doc.processingStatus === 'PROCESSING' || doc.processingStatus === 'PENDING') {
+          res.status(202).json({
+            success: false,
+            message: 'Document is still processing. Please wait a moment and try again.',
+            code: 'DOCUMENT_PROCESSING',
+            retryAfter: 5
+          });
+          return;
+        }
+
+        if (doc.processingStatus === 'FAILED') {
+          res.status(422).json({
+            success: false,
+            message: 'Document processing failed. Please re-upload the document.',
+            code: 'DOCUMENT_PROCESSING_FAILED'
+          });
+          return;
+        }
+
+        if (doc.chunkCount === 0) {
+          res.status(422).json({
+            success: false,
+            message: 'No content could be extracted from this document. Please try a different PDF.',
+            code: 'NO_CONTENT_EXTRACTED'
+          });
+          return;
+        }
       }
 
       // If documentId is not provided, fetch the latest processed document for this user
@@ -62,7 +91,7 @@ export class QuestionsController {
       await subscriber.connect();
 
       let resolved = false;
-      const timeoutMs = 45000; // 45s timeout
+      const timeoutMs = 150000; // 150s timeout (120s LLM generation + 30s buffer)
 
       const cleanUp = async () => {
         try {

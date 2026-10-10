@@ -126,11 +126,27 @@ class RedisWorker:
         try:
             # 1. Deserialize message
             event = MessageSerializer.deserialize(raw_data)
-            
+
             # 2. Validate envelope
             MessageValidator.validate_envelope(event)
 
-            # 3. Dispatch to handler
+            # 3. Filter out response events (these are for backend, not AI service)
+            response_event_types = {
+                "DOCUMENT_PROCESSING_STARTED",
+                "DOCUMENT_PROCESSING_COMPLETED",
+                "DOCUMENT_PROCESSING_FAILED",
+                "SUGGESTED_QUESTIONS_RESPONSE",
+                "SUGGESTED_QUESTIONS_ERROR",
+                "CHAT_RESPONSE",
+                "CHAT_ERROR"
+            }
+
+            if event.eventType in response_event_types:
+                # Silently ignore response events - they're meant for backend
+                logger.debug(f"Worker: Ignoring response event {event.eventType} (meant for backend)")
+                return
+
+            # 4. Dispatch to handler
             await self.dispatcher.dispatch(event)
 
         except (MessageValidationError, InvalidEventError) as val_err:

@@ -16,16 +16,16 @@ class ChatContextBuilder:
         Maps ChatEventRequest fields into the initial ChatWorkflowState dict.
         """
         logger.debug(f"ChatContextBuilder: Mapping workflow state for req {request.requestId}")
-        
+
         # Pull optional parameters from request metadata, or fall back to defaults
-        top_k = request.metadata.get("top_k", 5)
+        top_k = request.metadata.get("top_k", 3)  # Reduced from 5 to 3 for faster processing
         score_threshold = request.metadata.get("score_threshold")
-        document_id = request.metadata.get("documentId") # scope to specific doc if passed
+        document_ids = request.documentIds  # Use the new documentIds field from request
 
         return {
             "query": request.question,
             "conversation_id": request.conversationId,
-            "document_id": document_id,
+            "document_ids": document_ids,  # Pass array of document IDs
             "top_k": top_k,
             "score_threshold": score_threshold,
         }

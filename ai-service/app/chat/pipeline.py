@@ -69,10 +69,10 @@ class ChatPipeline:
             logger.info(f"ChatPipeline: Workflow finished successfully in {execution_time:.2f}ms.")
 
             # 4. Extract outputs
-            answer = final_state.get("answer") or "I couldn't find relevant information in the uploaded documents."
+            answer = final_state.get("answer")
             confidence = final_state.get("confidence") or "LOW"
             citations = final_state.get("citations") or []
-            
+
             retriever_result = final_state.get("retriever_result")
             retrieved_chunks_list = []
             if retriever_result and hasattr(retriever_result, "chunks"):
@@ -83,6 +83,16 @@ class ChatPipeline:
                         "pageNumber": chunk.pageNumber,
                         "score": chunk.score
                     })
+
+            # Enhanced fallback with specific messages
+            if not answer:
+                if not retrieved_chunks_list:
+                    answer = "No documents have been uploaded yet. Please upload documents to ask questions."
+                    logger.warning("ChatPipeline: No answer generated and no chunks retrieved - likely empty database")
+                else:
+                    answer = "I couldn't find information about this in the uploaded documents."
+                    logger.warning("ChatPipeline: No answer generated despite having retrieved chunks")
+                confidence = "LOW"
 
             # 5. Assemble response event
             response_event = self.response_builder.build_response(

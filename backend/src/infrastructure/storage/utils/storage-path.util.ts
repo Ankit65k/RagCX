@@ -1,5 +1,4 @@
 import path from 'path';
-import { storageConfig } from '../../../config/storage.config.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Path segment character filter
@@ -16,26 +15,26 @@ const SAFE_SEGMENT_PATTERN = /[^a-z0-9\-_]/gi;
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Generates a date-partitioned, traversal-safe storage path for documents.
+ * Generates a date-partitioned, traversal-safe relative storage path for documents.
  *
  * Directory structure:
  * ```
- * <base>/documents/YYYY/MM/DD[/<subPath>]/
+ * documents/YYYY/MM/DD[/<subPath>]/
  * ```
  * Example:
  * ```
- * ./uploads/documents/2024/01/15/
- * ./uploads/documents/2024/01/15/thumbnails/
+ * documents/2024/01/15/
+ * documents/2024/01/15/thumbnails/
  * ```
  *
  * Security guarantees:
  * - The `subPath` is sanitised before inclusion.
  * - `path.normalize` collapses any remaining `..` sequences.
- * - The result is always relative to `storageConfig.localPath`.
+ * - The result is a relative path to be joined with the base storage directory.
  *
  * @param subPath  Optional additional path segment appended after the date.
  *                 Must contain only alphanumeric, dash, and underscore characters.
- * @returns        Normalised absolute (or config-relative) storage path string.
+ * @returns        Normalised relative storage path string.
  */
 export const generateStoragePath = (subPath?: string): string => {
   const now = new Date();
@@ -45,7 +44,6 @@ export const generateStoragePath = (subPath?: string): string => {
   const day   = String(now.getUTCDate()).padStart(2, '0');
 
   const segments: string[] = [
-    storageConfig.localPath,
     'documents',
     year,
     month,

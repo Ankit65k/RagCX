@@ -92,10 +92,11 @@ class Container(containers.DeclarativeContainer):
     )
 
     # 4. HTTP Connection Provider for Ollama API
-    # connect=10s catches unreachable host quickly; read=300s allows LLM inference.
+    # connect=10s catches unreachable host quickly
+    # read=None allows per-request timeout control (no client-level read timeout)
     http_client = providers.Singleton(
         httpx.AsyncClient,
-        timeout=httpx.Timeout(connect=10.0, read=settings.OLLAMA_REQUEST_TIMEOUT, write=30.0, pool=10.0),
+        timeout=httpx.Timeout(connect=10.0, read=None, write=30.0, pool=10.0),
     )
 
     # 5. LLM Provider Provider

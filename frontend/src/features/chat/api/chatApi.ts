@@ -55,9 +55,10 @@ export const chatApi = {
     return res.data;
   },
 
-  sendMessage: async (sessionId: string, message: string): Promise<ChatResponse> => {
+  sendMessage: async (sessionId: string, message: string, documentIds?: string[]): Promise<ChatResponse> => {
     const res = await axiosClient.post(`/chat/sessions/${sessionId}/messages`, {
       prompt: message,
+      documentIds: documentIds || [],
     });
     return res.data;
   },

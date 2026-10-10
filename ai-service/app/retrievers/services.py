@@ -48,28 +48,46 @@ class ContextBuilder:
     enforcing character size limits to prevent prompt token exhaustion.
     """
 
+    # Target max characters per chunk after truncation
+    MAX_CHUNK_CHARS = 800
+
+    @staticmethod
+    def _truncate_chunk_text(text: str, max_chars: int = MAX_CHUNK_CHARS) -> str:
+        """Truncate chunk text to max_chars, preserving complete words when possible."""
+        if len(text) <= max_chars:
+            return text
+        # Try to truncate at a word boundary
+        truncated = text[:max_chars]
+        last_space = truncated.rfind(' ')
+        if last_space > 0:
+            return truncated[:last_space] + "..."
+        return truncated + "..."
+
     @staticmethod
     def build_context(chunks: List[RetrievedChunk]) -> str:
         logger.info("Retriever: Formatting retrieval contexts...")
         context_parts = []
         char_count = 0
-        max_chars = settings.EMBEDDING_CHUNK_SIZE * 5 # Config default placeholder check
+        max_chars = settings.EMBEDDING_CHUNK_SIZE * 5  # Config default placeholder check
 
         for c in chunks:
+            # Truncate chunk text to MAX_CHUNK_CHARS for better focus
+            truncated_text = ContextBuilder._truncate_chunk_text(c.text)
+
             # Build chunk layout block with metadata headers
             block = (
                 f"[Source Document: {c.documentId} | Chunk ID: {c.chunkId} | Page: {c.pageNumber} | Score: {c.score:.4f}]\n"
-                f"{c.text}\n"
+                f"{truncated_text}\n"
                 f"---"
             )
-            
+
             block_len = len(block)
             if char_count + block_len > max_chars:
                 logger.warning(
                     f"Retriever: Context length exceeded character limit ({max_chars}). Truncating blocks."
                 )
                 break
-                
+
             context_parts.append(block)
             char_count += block_len
 

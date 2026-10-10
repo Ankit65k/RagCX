@@ -26,7 +26,7 @@ export default function DocumentUploadPage() {
     });
   }, [uploadQueue]);
 
-  const handleUpdateStatus = (fileKey: string, status: UploadProgressInfo["status"]) => {
+  const handleUpdateStatus = React.useCallback((fileKey: string, status: UploadProgressInfo["status"]) => {
     setLocalQueue((prev) => {
       if (!prev[fileKey]) return prev;
       const updatedItem = { ...prev[fileKey], status };
@@ -47,7 +47,7 @@ export default function DocumentUploadPage() {
         [fileKey]: updatedItem,
       };
     });
-  };
+  }, []);
 
   const handleClearItem = (fileKey: string) => {
     clearQueueItem(fileKey);

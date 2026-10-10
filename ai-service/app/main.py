@@ -1,6 +1,7 @@
 import time
 import uuid
 import logging
+import httpx
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
@@ -20,13 +21,48 @@ from app.core.logging_config import (
 from app.api.v1.router import api_router
 
 
+async def warmup_llm_model() -> bool:
+    """
+    Warmup the LLM model by loading it into memory.
+    This triggers Ollama to load the model on first request.
+    Returns True if successful, False otherwise.
+    """
+    try:
+        logger.info(f"Warming up LLM model: {settings.OLLAMA_CHAT_MODEL}")
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{settings.OLLAMA_BASE_URL}/api/generate",
+                json={
+                    "model": settings.OLLAMA_CHAT_MODEL,
+                    "prompt": "Ready",
+                    "stream": False,
+                    "options": {
+                        "num_predict": 1,
+                    }
+                },
+                timeout=180.0,  # 180 seconds to allow for cold model loading
+            )
+            if response.status_code == 200:
+                logger.info(f"LLM model warmup successful: {settings.OLLAMA_CHAT_MODEL}")
+                return True
+            else:
+                logger.warning(f"LLM model warmup failed with status: {response.status_code}")
+                return False
+    except httpx.TimeoutException:
+        logger.warning("LLM model warmup timed out - model may need to be loaded. This is expected on first request.")
+        return False
+    except Exception as e:
+        logger.warning(f"LLM model warmup error: {str(e)}")
+        return False
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """
     Lifespan Manager handling application startup and shutdown events.
     """
     logger.info("Initializing application container and connection pools...")
-    
+
     # Instantiate DI Container
     container = Container()
     app.state.container = container
@@ -35,12 +71,15 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     redis_client = container.redis_client()
     http_client = container.http_client()
 
+    # Warmup LLM model
+    await warmup_llm_model()
+
     # Resolve and start Redis worker
     worker = container.redis_worker()
     await worker.start()
 
     logger.info("Application container loaded successfully. Services online.")
-    
+
     yield
 
     # Shutdown / cleanup connection pools gracefully

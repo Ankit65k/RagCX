@@ -30,6 +30,10 @@ export const errorHandler = (
     statusCode = 409;
     errorCode = 'CONFLICT';
     message = err.message;
+    details = {
+      existingDocumentId: (err as any).existingDocumentId,
+      checksum: (err as any).checksum,
+    };
   } else if ((err as any).code === 'DOCUMENT_OWNERSHIP_DENIED') {
     statusCode = 403;
     errorCode = 'FORBIDDEN';

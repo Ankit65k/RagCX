@@ -11,10 +11,10 @@ class OllamaEmbeddingProvider(EmbeddingProvider):
 
     def __init__(self) -> None:
         self.embeddings = OllamaEmbeddings(
-            model=settings.EMBEDDING_MODEL,
+            model=settings.OLLAMA_EMBED_MODEL,
             base_url=settings.OLLAMA_BASE_URL,
         )
-        self.model = settings.EMBEDDING_MODEL
+        self.model = settings.OLLAMA_EMBED_MODEL
 
     async def embed_query(self, text: str) -> List[float]:
         return await self.embeddings.aembed_query(text)

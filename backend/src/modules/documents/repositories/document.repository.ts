@@ -239,6 +239,7 @@ export class DocumentRepository
         this.delegate(tx).findFirst({
           where: {
             checksum,
+            uploadStatus: UploadStatus.UPLOADED, // Exclude soft-deleted documents
             ...(uploadedBy ? { uploadedBy } : {}),
           },
         }),

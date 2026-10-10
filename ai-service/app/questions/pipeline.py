@@ -39,8 +39,8 @@ class QuestionGenerationPipeline:
         self.ranker = ranker
         self.formatter = formatter
 
-    async def generate(self, chunks: List[Any], count: int = 5) -> QuestionGenerationResult:
-        logger.info("QuestionGeneration: Pipeline execution started.")
+    async def generate(self, chunks: List[Any], count: int = 4, request_id: str = "unknown") -> QuestionGenerationResult:
+        logger.info(f"QuestionGeneration: Pipeline execution started. RequestId: {request_id}")
         start_time = time.perf_counter()
 
         # Enforce constraints: count default 5, maximum 10
@@ -73,26 +73,87 @@ class QuestionGenerationPipeline:
             # 2. Prompt Assembly
             messages = self.prompt_builder.build(selected_chunks, count)
 
-            # 3. LLM Question Generation
-            logger.info("QuestionGeneration: LLM generation started (Structured JSON).")
-            try:
-                raw_response = await self.llm_provider.chat(messages, format="json")
-                raw_response = raw_response.strip()
-                logger.info("QuestionGeneration: LLM generation completed.")
-            except Exception as e:
-                logger.error(f"QuestionGeneration: LLM request failed: {str(e)}")
-                raise QuestionGenerationError(f"LLM request failed: {str(e)}") from e
+            # 3. LLM Question Generation with 120s timeout
+            logger.info(f"[{request_id}] LLM generation started with 120-second timeout")
 
-            # 4. Parse JSON Response
             try:
-                parsed_response = LLMQuestionsResponse.model_validate_json(raw_response)
-                items = parsed_response.questions
+                raw_response = await self.llm_provider.chat(messages, timeout=120.0)
+                raw_response = raw_response.strip()
+
+                # Log raw LLM response for diagnostics
+                logger.info(f"[{request_id}] LLM RAW RESPONSE ({len(raw_response)} chars): {raw_response[:500]}{'...' if len(raw_response) > 500 else ''}")
+                logger.info(f"[{request_id}] LLM generation completed successfully")
             except Exception as e:
-                logger.error(f"QuestionGeneration: Failed to parse LLM JSON output: {str(e)}")
-                raise QuestionGenerationError(f"LLM generated invalid JSON: {str(e)}") from e
+                error_msg = f"LLM generation failed: {str(e)}"
+                logger.error(f"[{request_id}] LLM_GENERATION_FAILED: {error_msg}")
+                # Return empty result instead of raising to prevent pipeline failure
+                return QuestionGenerationResult(
+                    questions=[],
+                    metadata={
+                        "status": "LLM_GENERATION_FAILED",
+                        "message": error_msg,
+                        "requestId": request_id,
+                        "error": str(e),
+                    },
+                )
+
+            # 4. Parse line-by-line response
+            try:
+                lines = [line.strip() for line in raw_response.split("\n") if line.strip()]
+
+                # Remove numbering/bullets and create LLMQuestionItem objects
+                from app.questions.models import LLMQuestionItem, ConfidenceLevel
+
+                items = []
+                available_pages = list(set([getattr(c, "pageNumber", 0) for c in selected_chunks]))
+
+                for i, line in enumerate(lines):
+                    # Remove leading numbers, dots, dashes, bullets, etc.
+                    cleaned = line.lstrip("0123456789.-) *")
+
+                    if len(cleaned) > 10:  # Filter out very short lines
+                        # Assign all available pages (we don't know specific pages per question)
+                        items.append(LLMQuestionItem(
+                            question=cleaned,
+                            related_pages=available_pages,
+                            confidence=ConfidenceLevel.MEDIUM
+                        ))
+
+                # Log parsed result
+                logger.info(f"[{request_id}] PARSED: {len(items)} questions from LLM (line-by-line)")
+                for i, item in enumerate(items):
+                    logger.debug(f"[{request_id}]   Parsed Q{i+1}: {item.question[:50]}...")
+
+                if not items:
+                    logger.warning(f"[{request_id}] No questions parsed from response")
+                    return QuestionGenerationResult(
+                        questions=[],
+                        metadata={
+                            "status": "NO_QUESTIONS_PARSED",
+                            "message": "No valid questions could be extracted from LLM response",
+                            "requestId": request_id,
+                            "raw_response": raw_response[:500],
+                        },
+                    )
+
+            except Exception as e:
+                error_msg = f"Failed to parse LLM output: {str(e)}"
+                logger.error(f"[{request_id}] PARSE_FAILED: {error_msg}")
+                logger.error(f"[{request_id}] RAW_RESPONSE_THAT_FAILED: {raw_response[:1000]}")
+                # Return empty result instead of raising
+                return QuestionGenerationResult(
+                    questions=[],
+                    metadata={
+                        "status": "PARSE_FAILED",
+                        "message": error_msg,
+                        "requestId": request_id,
+                        "error": str(e),
+                        "raw_response": raw_response[:500],
+                    },
+                )
 
             # 5. Validation
-            valid_items = self.validator.validate_batch(items, selected_chunks)
+            valid_items = self.validator.validate_batch(items, selected_chunks, request_id=request_id)
 
             # 6. Deduplication (Semantic + String)
             deduplicated_items = await self.deduplicator.deduplicate(valid_items)

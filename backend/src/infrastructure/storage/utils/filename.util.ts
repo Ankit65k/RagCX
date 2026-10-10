@@ -70,6 +70,11 @@ export const generateFilename = (safeExtension: string): string => {
  * Used ONLY to derive the extension for `generateFilename` — the original
  * filename itself is discarded immediately afterwards.
  *
+ * Security note: Files with multiple extensions (e.g., "script.md.pdf") are
+ * accepted based on their FINAL extension only. The MIME type validation in
+ * validateFile() is the primary security control — this function only ensures
+ * the final extension matches the validated MIME type.
+ *
  * @param originalFilename  Untrusted filename supplied by the client.
  * @returns                 Safe, lowercase extension without a leading dot,
  *                          or an empty string when no extension is present.
@@ -78,11 +83,7 @@ export const extractSafeExtension = (originalFilename: string): string => {
   // Strip directory traversal fragments before extraction.
   const basename = path.basename(originalFilename);
 
-  // Reject double extensions entirely.
-  if (DOUBLE_EXTENSION_PATTERN.test(basename)) {
-    return '';
-  }
-
+  // Extract the final extension (e.g., "script.md.pdf" → "pdf")
   const ext = path.extname(basename).toLowerCase().replace(/^\./, '');
 
   // Reject any character that is not alphanumeric.
@@ -91,4 +92,31 @@ export const extractSafeExtension = (originalFilename: string): string => {
   }
 
   return SAFE_EXTENSIONS.has(ext) ? ext : '';
+};
+
+/**
+ * Sanitizes a filename for display in error messages.
+ *
+ * Removes double extensions and sanitizes special characters.
+ * Example: "AnkitResume.pdf.pdf" → "AnkitResume.pdf"
+ *
+ * @param filename  Original filename from client or database.
+ * @returns         Clean filename safe for display in UI.
+ */
+export const sanitizeFilenameDisplay = (filename: string): string => {
+  const basename = path.basename(filename);
+
+  // Remove directory traversal fragments
+  const safeBasename = basename.replace(/[^\w\-\.]/g, '');
+
+  // Strip double extensions (e.g., .pdf.pdf → .pdf)
+  const parts = safeBasename.split('.');
+  if (parts.length >= 3) {
+    // Keep first and last parts only: "AnkitResume.pdf.pdf" → ["AnkitResume", "pdf", "pdf"]
+    const name = parts.slice(0, -2).join('.');
+    const extension = parts[parts.length - 1];
+    return name ? `${name}.${extension}` : `.${extension}`;
+  }
+
+  return safeBasename;
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import { DocumentItem } from "../api/documentsApi";
 import { X, Calendar, FileText, User, ShieldCheck, Database, HelpCircle } from "lucide-react";
 
@@ -13,6 +14,14 @@ interface DocumentDrawerProps {
 }
 
 export default function DocumentDrawer({ document, isOpen, onClose }: DocumentDrawerProps) {
+  const router = useRouter();
+
+  const handleQuestionClick = (questionText: string) => {
+    if (document?.id) {
+      router.push(`/chat/new?documentId=${document.id}&question=${encodeURIComponent(questionText)}`);
+      onClose();
+    }
+  };
   if (!isOpen || !document) return null;
 
   return (
@@ -129,7 +138,7 @@ export default function DocumentDrawer({ document, isOpen, onClose }: DocumentDr
           <div className="pt-4 border-t border-border/50">
             <SuggestedQuestionsList
               documentId={document.id}
-              onQuestionClick={() => {}}
+              onQuestionClick={handleQuestionClick}
             />
           </div>
         </div>

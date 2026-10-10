@@ -13,6 +13,7 @@ class ChatEventRequest(BaseModel):
     conversationId: str
     userId: str
     question: str
+    documentIds: List[str] = Field(default_factory=list)  # Empty = query all documents
     timestamp: datetime = Field(default_factory=datetime.utcnow)
     metadata: Dict[str, Any] = Field(default_factory=dict)
 

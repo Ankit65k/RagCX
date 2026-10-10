@@ -156,12 +156,15 @@ export class ChatController {
   /**
    * POST /api/v1/chat/sessions/:id/messages
    * Sends a user message, publishes CHAT_REQUEST, and waits for CHAT_RESPONSE.
+   *
+   * Body: { prompt: string, documentIds?: string[] }
+   * - documentIds: Optional array of document IDs to query. If omitted, queries all user documents.
    */
   public async sendMessage(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user?.id;
       const { id: sessionIdentifier } = req.params;
-      const { prompt } = req.body;
+      const { prompt, documentIds } = req.body;
       const requestId = req.id || uuidv4();
       const correlationId = (req.headers['x-correlation-id'] || requestId).toString();
 
@@ -172,6 +175,12 @@ export class ChatController {
 
       if (!prompt) {
         res.status(400).json({ message: 'Prompt is required' });
+        return;
+      }
+
+      // Validate documentIds if provided
+      if (documentIds !== undefined && (!Array.isArray(documentIds) || documentIds.some((id: any) => typeof id !== 'string'))) {
+        res.status(400).json({ message: 'documentIds must be an array of strings' });
         return;
       }
 
@@ -211,7 +220,7 @@ export class ChatController {
       await subscriber.connect();
 
       let resolved = false;
-      const timeoutMs = 60000; // 60s timeout for LLM inference
+      const timeoutMs = 120000; // 120s timeout for full RAG pipeline (retrieval + LLM inference)
 
       const cleanUp = async () => {
         try {
@@ -283,6 +292,7 @@ export class ChatController {
         {
           chatSessionId: sessionIdentifier,
           prompt,
+          documentIds: documentIds || [], // Empty array means query all user documents
         },
         requestId,
       );

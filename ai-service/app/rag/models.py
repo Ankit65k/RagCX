@@ -61,4 +61,3 @@ class LLMStructuredResponse(BaseModel):
     answer: str = Field(description="The final direct answer to the user query based ONLY on the provided context")
     confidence: ConfidenceLevel = Field(description="Grounded confidence level in the answer based on context sufficiency")
     citations: List[LLMResponseCitation] = Field(description="List of traceable source references attributed to the answer")
-    reasoning: str = Field(description="Step-by-step reasoning explaining how the answer was derived from the context")

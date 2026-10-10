@@ -31,7 +31,8 @@ class ChatEventHandler:
             payload = event.payload
             chat_session_id = payload.get("chatSessionId")
             question = payload.get("prompt")
-            
+            document_ids = payload.get("documentIds", [])  # Default to empty list
+
             if not chat_session_id or not question:
                 logger.error(f"ChatEventHandler: Missing session ID or query in event payload: {payload}")
                 raise ChatPipelineError("Malformed payload: chatSessionId and prompt are required.")
@@ -46,6 +47,7 @@ class ChatEventHandler:
                 conversationId=chat_session_id,
                 userId=user_id,
                 question=question,
+                documentIds=document_ids,
                 timestamp=datetime.utcnow(),
                 metadata=event.metadata
             )

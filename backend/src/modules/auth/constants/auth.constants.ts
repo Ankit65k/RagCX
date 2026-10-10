@@ -36,6 +36,7 @@ export enum Permission {
   DOCUMENTS_VIEW = 'documents:view',
   DOCUMENTS_UPLOAD = 'documents:upload',
   DOCUMENTS_DELETE = 'documents:delete',
+  DOCUMENTS_RESTORE = 'documents:restore',
   DOCUMENTS_PROCESS = 'documents:process',
 
   // Chat/Conversation Management
@@ -57,8 +58,10 @@ export const ROLE_PERMISSIONS: Record<'ADMIN' | 'USER', Permission[]> = {
     Permission.DOCUMENTS_VIEW,
     Permission.DOCUMENTS_UPLOAD,
     Permission.DOCUMENTS_DELETE,
+    Permission.DOCUMENTS_RESTORE,
     Permission.CHAT_CREATE,
     Permission.CHAT_VIEW,
     Permission.CHAT_DELETE,
+    Permission.DOCUMENTS_PROCESS,
   ],
 };

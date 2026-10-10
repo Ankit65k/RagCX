@@ -43,7 +43,7 @@ class QuestionFormatter:
             )
 
         metadata = {
-            "executionTimeMs": round(execution_time_ms, 2),
+            "execution_time_ms": round(execution_time_ms, 2),  # Use snake_case to match handler
             "modelUsed": model_used,
             "chunksAnalyzedCount": len(chunks),
             "totalQuestionsGenerated": len(suggested_questions),

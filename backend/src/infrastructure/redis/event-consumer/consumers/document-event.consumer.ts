@@ -78,9 +78,11 @@ export class DocumentEventConsumer {
         try {
           await documentRepository.findDocumentByIdOrThrow(documentId);
 
-          // Update total pages and status inside the database
+          // Update total pages, chunk count, embedding count, and status inside the database
           await documentRepository.updateDocument(documentId, {
             totalPages:       pageCount,
+            chunkCount:       chunkCount || 0,
+            embeddingCount:   embeddingCount || 0,
             processingStatus: ProcessingStatus.COMPLETED,
           });
 

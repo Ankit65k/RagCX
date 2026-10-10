@@ -46,22 +46,24 @@ class Settings(BaseSettings):
 
     # OllamaConfig fields
     OLLAMA_BASE_URL: str = Field(default="http://localhost:11434")
-    LLM_MODEL: str = Field(default="llama3.1:8b")
-    OLLAMA_TEMPERATURE: float = 0.7
+    OLLAMA_CHAT_MODEL: str = Field(default="llama3.2:1b")
+    OLLAMA_EMBED_MODEL: str = Field(default="nomic-embed-text")
+    OLLAMA_TEMPERATURE: float = 0.1
     OLLAMA_TOP_P: float = 0.9
     OLLAMA_TOP_K: int = 40
     OLLAMA_CONTEXT_WINDOW: int = 4096
-    OLLAMA_REQUEST_TIMEOUT: float = 300.0
-    OLLAMA_KEEP_ALIVE: str = "5m"
+    OLLAMA_REQUEST_TIMEOUT: float = 120.0
+    OLLAMA_KEEP_ALIVE: str = "30m"
     OLLAMA_STREAMING: bool = False
+    OLLAMA_NUM_PREDICT: int = 300
 
     # EmbeddingConfig fields
     EMBEDDING_PROVIDER: str = Field(default="Ollama")
     EMBEDDING_MODEL: str = Field(default="nomic-embed-text")
     EMBEDDING_DIMENSIONS: int = 768
     EMBEDDING_BATCH_SIZE: int = 32
-    EMBEDDING_CHUNK_SIZE: int = 500
-    EMBEDDING_CHUNK_OVERLAP: int = 50
+    EMBEDDING_CHUNK_SIZE: int = 800
+    EMBEDDING_CHUNK_OVERLAP: int = 150
 
     # ChromaConfig fields
     CHROMA_PERSIST_DIR: str = Field(default="data/chroma")

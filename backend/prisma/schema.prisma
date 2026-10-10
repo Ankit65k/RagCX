@@ -12,6 +12,12 @@ enum Role {
   USER
 }
 
+enum QuestionConfidence {
+  HIGH
+  MEDIUM
+  LOW
+}
+
 enum ProcessingStatus {
   PENDING
   PROCESSING
@@ -71,6 +77,8 @@ model Document {
   mimeType          String
   fileSize          Int
   totalPages        Int              @default(0)
+  chunkCount        Int              @default(0)
+  embeddingCount    Int              @default(0)
   uploadStatus      UploadStatus     @default(UPLOADING)
   processingStatus  ProcessingStatus @default(PENDING)
   uploadedBy        String           @db.Uuid
@@ -113,4 +121,19 @@ model ChatMessage {
   @@index([chatSessionId])
   @@index([createdAt])
   @@map("chat_messages")
+}
+
+model SuggestedQuestion {
+  id              String           @id @default(uuid()) @db.Uuid
+  documentId      String           @db.Uuid
+  question        String           @db.Text
+  confidence      QuestionConfidence
+  relatedPages    Json?            @db.Json
+  relatedChunkIds String[]         @db.VarChar
+  createdAt       DateTime         @default(now())
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@map("suggested_questions")
 }

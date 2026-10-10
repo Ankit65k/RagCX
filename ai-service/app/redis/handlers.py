@@ -1,5 +1,6 @@
 import os
 import uuid
+import json
 import logging
 import asyncio
 from abc import ABC, abstractmethod
@@ -149,6 +150,16 @@ class DocumentUploadedHandler(BaseHandler):
                 },
                 incoming_event=event,
             )
+
+            # 6. Trigger background question generation
+            logger.info(f"Handler: Scheduling background question generation for document {payload.documentId}")
+            await self.publish_response(
+                "SUGGESTED_QUESTIONS_REQUEST",
+                {"documentId": payload.documentId},
+                incoming_event=event,
+                channel="chat:jobs"
+            )
+
             logger.info(f"Handler: Document processing succeeded (Doc ID: {payload.documentId})")
 
         except Exception as e:
@@ -263,23 +274,43 @@ class SuggestedQuestionsHandler(BaseHandler):
         super().__init__(redis_client)
         self.vector_store = vector_store
         self.pipeline = pipeline
+        self.max_retries = 1
 
     async def handle(self, event: BusEvent) -> None:
         payload = event.payload
         document_id = payload.get("documentId")
         correlation_id = event.correlationId
         request_id = event.requestId
+        retry_count = payload.get("retryCount", 0)
 
-        logger.info(f"Handler: Generating suggested questions for document ID: {document_id}")
+        logger.info(f"[{request_id}] Handler: Generating suggested questions for document ID: {document_id} (retry: {retry_count})")
 
         try:
             if not document_id:
                 raise ValueError("documentId is required in suggested questions payload")
 
-            # 1. Fetch chunks for the document from vector store
+            # 1. Check if document has chunks in vector store (processing completed)
             collection = await self.vector_store._get_collection()
             data = collection.get(where={"documentId": document_id})
-            
+
+            if not data or not data.get("documents") or len(data.get("documents", [])) == 0:
+                # No chunks found - document likely still processing or failed
+                logger.warning(f"[{request_id}] Handler: No chunks found for document {document_id}. Skipping generation.")
+                # Return empty response to indicate no questions available
+                response_payload = {
+                    "documentId": document_id,
+                    "questions": [],
+                    "status": "NO_CHUNKS_FOUND",
+                    "message": "Document is still processing or failed - no chunks available."
+                }
+                await self.publish_response(
+                    "SUGGESTED_QUESTIONS_RESPONSE",
+                    response_payload,
+                    incoming_event=event,
+                    channel="chat:jobs"
+                )
+                return
+
             chunks = []
             if data and data.get("documents"):
                 documents = data["documents"]
@@ -301,10 +332,50 @@ class SuggestedQuestionsHandler(BaseHandler):
                     )
 
             # 2. Run question generation pipeline
-            result = await self.pipeline.generate(chunks=chunks, count=5)
+            result = await self.pipeline.generate(chunks=chunks, count=5, request_id=request_id)
 
-            # 3. Publish SUGGESTED_QUESTIONS_RESPONSE back to Redis Pub/Sub
-            response_payload = {
+            # 3. Check if generation failed and should retry
+            if result.questions == [] and result.metadata.get("status") in ["LLM_GENERATION_FAILED", "JSON_PARSE_FAILED"]:
+                if retry_count < self.max_retries:
+                    logger.info(f"[{request_id}] Handler: Generation failed, retrying... (attempt {retry_count + 1}/{self.max_retries})")
+                    # Publish retry request
+                    retry_event = BusEvent(
+                        eventId=str(uuid.uuid4()),
+                        eventType="SUGGESTED_QUESTIONS_REQUEST",
+                        version="1.0",
+                        timestamp=datetime.now(timezone.utc).isoformat(),
+                        correlationId=correlation_id,
+                        requestId=request_id,
+                        producer="ragcx-ai-service",
+                        payload={
+                            "documentId": document_id,
+                            "retryCount": retry_count + 1
+                        },
+                        metadata={}
+                    )
+                    await self.redis_client.publish("chat:jobs", MessageSerializer.serialize(retry_event))
+                    return
+                else:
+                    # Max retries exceeded, return error response
+                    error_msg = result.metadata.get("message", "Unknown error")
+                    logger.error(f"[{request_id}] Handler: Max retries exceeded for document {document_id}")
+                    response_payload = {
+                        "documentId": document_id,
+                        "questions": [],
+                        "status": "GENERATION_FAILED",
+                        "message": f"Model timed out, click Regenerate. Error: {error_msg}"
+                    }
+                    await self.publish_response(
+                        "SUGGESTED_QUESTIONS_ERROR",
+                        response_payload,
+                        incoming_event=event,
+                        channel="chat:jobs"
+                    )
+                    return
+
+            # 4. Store questions in Redis cache by documentId
+            cache_key = f"suggested_questions:{document_id}"
+            questions_data = {
                 "documentId": document_id,
                 "questions": [
                     {
@@ -316,7 +387,21 @@ class SuggestedQuestionsHandler(BaseHandler):
                         "generationTimeMs": result.metadata.get("execution_time_ms", 0.0)
                     }
                     for q in result.questions
-                ]
+                ],
+                "generatedAt": datetime.now(timezone.utc).isoformat(),
+                "model": result.metadata.get("modelUsed", "unknown"),
+            }
+            await self.redis_client.setex(
+                cache_key,
+                86400,  # Cache for 24 hours
+                json.dumps(questions_data)
+            )
+            logger.info(f"[{request_id}] Handler: Cached {len(result.questions)} questions for document {document_id}")
+
+            # 5. Publish SUGGESTED_QUESTIONS_RESPONSE back to Redis Pub/Sub
+            response_payload = {
+                "documentId": document_id,
+                "questions": questions_data["questions"]
             }
 
             await self.publish_response(
@@ -325,15 +410,17 @@ class SuggestedQuestionsHandler(BaseHandler):
                 incoming_event=event,
                 channel="chat:jobs"
             )
-            logger.info(f"Handler: Successfully generated and published suggested questions for {document_id}")
+            logger.info(f"[{request_id}] Handler: Successfully generated and published suggested questions for {document_id}")
 
         except Exception as e:
-            logger.error(f"Handler: Suggested questions generation failed. Error: {str(e)}", exc_info=True)
+            logger.error(f"[{request_id}] Handler: Suggested questions generation failed. DocumentId: {document_id}, Error: {str(e)}", exc_info=True)
             await self.publish_response(
                 "SUGGESTED_QUESTIONS_ERROR",
                 {
                     "documentId": document_id,
+                    "requestId": request_id,
                     "reason": str(e),
+                    "errorType": type(e).__name__,
                 },
                 incoming_event=event,
                 channel="chat:jobs"

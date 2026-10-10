@@ -36,31 +36,32 @@ class ChromaVectorStore(VectorStore):
         """
         if self._collection is None:
             try:
-                # Retrieve or create collection
+                # Retrieve or create collection with both distance metric AND embedding model metadata
+                # IMPORTANT: All metadata must be set during get_or_create_collection.
+                # ChromaDB does not allow modifying hnsw:space after collection creation.
                 self._collection = self.client.get_or_create_collection(
                     name=self.collection_name,
-                    metadata={"hnsw:space": settings.CHROMA_DISTANCE_METRIC},
+                    metadata={
+                        "hnsw:space": settings.CHROMA_DISTANCE_METRIC,
+                        "embedding_model": settings.EMBEDDING_MODEL,
+                    },
                 )
 
                 meta = self._collection.metadata or {}
                 stored_model = meta.get("embedding_model")
 
-                if stored_model is None:
-                    # Register current model space
-                    updated_meta = dict(meta)
-                    updated_meta["embedding_model"] = settings.EMBEDDING_MODEL
-                    self._collection.modify(metadata=updated_meta)
-                    logger.info(
-                        f"VectorStore: Registered model space '{settings.EMBEDDING_MODEL}' "
-                        f"on collection '{self.collection_name}'"
-                    )
-                elif stored_model != settings.EMBEDDING_MODEL:
+                if stored_model and stored_model != settings.EMBEDDING_MODEL:
                     # Model mismatch: raise validation error to prevent silent data corruption
                     raise InvalidEmbeddingError(
                         f"Embedding model mismatch in collection '{self.collection_name}'. "
                         f"Collection space uses '{stored_model}', but active config settings specify "
                         f"'{settings.EMBEDDING_MODEL}'. Trigger document re-indexing."
                     )
+
+                logger.info(
+                    f"VectorStore: Collection '{self.collection_name}' loaded with "
+                    f"model '{settings.EMBEDDING_MODEL}' and distance '{settings.CHROMA_DISTANCE_METRIC}'"
+                )
 
             except Exception as e:
                 self._collection = None
@@ -193,9 +194,18 @@ class ChromaVectorStore(VectorStore):
         collection = await self._get_collection()
         try:
             logger.info(f"VectorStore: Performing vector query (Top K: {top_k})")
-            
+
             # Map parameters to Chroma syntax
-            where_filter = filter_metadata if filter_metadata else None
+            where_filter = None
+            if filter_metadata:
+                # Handle documentIds array filter
+                if "documentIds" in filter_metadata and filter_metadata["documentIds"]:
+                    doc_ids = filter_metadata["documentIds"]
+                    # Use ChromaDB's $in operator for multiple document filtering
+                    where_filter = {"documentId": {"$in": doc_ids}}
+                    logger.info(f"VectorStore: Filtering by documentIds: {doc_ids}")
+                else:
+                    where_filter = filter_metadata
 
             results = collection.query(
                 query_embeddings=[query_vector],

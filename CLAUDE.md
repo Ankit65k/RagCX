@@ -32,6 +32,75 @@ Never claim something is "done," "tested," or "working" unless you've actually r
 
 
 
+\## Critical: Ollama Model Loading for AI Service
+
+
+
+**IMPORTANT FOR SEMINAR DEMO**: Ollama does NOT auto-load models after restart. If the AI service times out on chat/suggested questions, the model needs to be manually loaded. 
+
+**Fixed Issue**: Script was using `settings.LLM_MODEL` but correct setting is `settings.OLLAMA_CHAT_MODEL` (now fixed)
+
+
+
+\### Quick Fix (If AI Service is Hanging/Timing Out)
+
+```bash
+curl -X POST http://localhost:11434/api/pull -H "Content-Type: application/json" -d '{"name": "llama3.2:1b"}'
+```
+
+This loads the model into memory. Chat/generation will work after this (~30 seconds per request).
+
+
+
+\### Automated Solution (RECOMMENDED)
+
+Run the model loader script **before starting the AI service**:
+
+```bash
+# One-time load (exits after loading)
+cd ai-service
+python scripts/ensure_model_loaded.py
+
+# Keep-alive mode (pings every 5 minutes to prevent unloading)
+python scripts/ensure_model_loaded.py --keep-alive
+```
+
+
+
+\### Startup Sequence for Demo
+
+```bash
+# Terminal 1: Ensure model is loaded and keep it alive (WAIT for "Model loaded" message)
+cd ai-service
+python scripts/ensure_model_loaded.py --keep-alive
+
+# Terminal 2: Start AI service (AFTER model is loaded)
+cd ai-service
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+# Terminal 3: Start backend
+cd backend
+npm run dev
+
+# Terminal 4: Start frontend
+cd frontend
+npm run dev
+```
+
+**Why this matters**: Ollama unloads idle models after ~10-15 minutes. Without keep-alive, suggested questions will work initially but fail after idle time. The keep-alive script prevents this.
+
+
+
+\### Verifying Model is Loaded
+
+```bash
+curl http://localhost:11434/api/ps
+```
+
+Should show `"models":[{"name":"llama3.1:8b",...}]`. If `"models":[]`, the model needs loading.
+
+
+
 \## Session Handoff Protocol
 
 

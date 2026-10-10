@@ -29,9 +29,9 @@ router.post('/', requireAuth, requirePermission(Permission.DOCUMENTS_UPLOAD), up
 router.get('/', requireAuth, listCtrl.handle.bind(listCtrl));
 router.get('/search', requireAuth, searchCtrl.handle.bind(searchCtrl));
 router.get('/:id', requireAuth, getCtrl.handle.bind(getCtrl));
-router.delete('/:id', requireAuth, requireRole('ADMIN'), deleteCtrl.handle.bind(deleteCtrl));
-router.post('/:id/restore', requireAuth, requireRole('ADMIN'), restoreCtrl.handle.bind(restoreCtrl));
-router.post('/:id/reprocess', requireAuth, requireRole('ADMIN'), reprocessCtrl.handle.bind(reprocessCtrl));
+router.delete('/:id', requireAuth, requirePermission(Permission.DOCUMENTS_DELETE), deleteCtrl.handle.bind(deleteCtrl));
+router.post('/:id/restore', requireAuth, requirePermission(Permission.DOCUMENTS_RESTORE), restoreCtrl.handle.bind(restoreCtrl));
+router.post('/:id/reprocess', requireAuth, requirePermission(Permission.DOCUMENTS_PROCESS), reprocessCtrl.handle.bind(reprocessCtrl));
 
 export const documentRoutes = router;
 export default documentRoutes;

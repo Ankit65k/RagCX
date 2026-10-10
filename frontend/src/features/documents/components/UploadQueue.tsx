@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { UploadProgressInfo, useDocumentStatusQuery } from "../hooks/useDocumentUpload";
-import { Loader2, CheckCircle2, XCircle, FileText, Trash2 } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, FileText, Trash2, MessageSquare } from "lucide-react";
 
 interface UploadQueueProps {
   queue: Record<string, UploadProgressInfo>;
@@ -43,8 +44,9 @@ interface QueueItemRowProps {
 }
 
 function QueueItemRow({ fileKey, item, onClear, onStatusChange }: QueueItemRowProps) {
+  const router = useRouter();
   const isPolling = item.status === "PROCESSING" && !!item.documentId;
-  
+
   // Status Query: polls status every 3 seconds, stops automatically on COMPLETED/FAILED
   const { data: statusData } = useDocumentStatusQuery(
     item.documentId || "",
@@ -55,7 +57,14 @@ function QueueItemRow({ fileKey, item, onClear, onStatusChange }: QueueItemRowPr
     if (statusData && (statusData.status === "COMPLETED" || statusData.status === "FAILED")) {
       onStatusChange(statusData.status);
     }
-  }, [statusData, onStatusChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusData]);
+
+  const handleChatAboutDocument = () => {
+    if (item.documentId) {
+      router.push(`/chat/new?documentId=${item.documentId}`);
+    }
+  };
 
   const statusConfig = {
     UPLOADING: { color: "text-blue-500", label: "Uploading" },
@@ -63,6 +72,7 @@ function QueueItemRow({ fileKey, item, onClear, onStatusChange }: QueueItemRowPr
     PROCESSING: { color: "text-amber-500", label: "Processing", animate: true },
     COMPLETED: { color: "text-emerald-500", label: "Completed" },
     FAILED: { color: "text-rose-500", label: "Failed" },
+    DUPLICATE: { color: "text-orange-500", label: "Duplicate" },
   };
 
   const status = statusConfig[item.status];
@@ -81,7 +91,7 @@ function QueueItemRow({ fileKey, item, onClear, onStatusChange }: QueueItemRowPr
           <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-background border ${status.color}`}>
             {status.label}
           </span>
-          {(item.status === "COMPLETED" || item.status === "FAILED") && (
+          {(item.status === "COMPLETED" || item.status === "FAILED" || item.status === "DUPLICATE") && (
             <button
               onClick={onClear}
               className="p-1 rounded text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
@@ -118,16 +128,44 @@ function QueueItemRow({ fileKey, item, onClear, onStatusChange }: QueueItemRowPr
       )}
 
       {item.status === "COMPLETED" && (
-        <div className="flex items-center gap-1.5 text-[10px] text-emerald-600 font-semibold">
-          <CheckCircle2 className="h-3.5 w-3.5" />
-          <span>Document chunks successfully indexed into ChromaDB!</span>
-        </div>
+        <>
+          <div className="flex items-center gap-1.5 text-[10px] text-emerald-600 font-semibold">
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            <span>Document chunks successfully indexed into ChromaDB!</span>
+          </div>
+          {item.documentId && (
+            <button
+              onClick={handleChatAboutDocument}
+              className="flex items-center gap-1.5 text-[10px] font-semibold text-primary hover:text-primary/80 transition-colors"
+            >
+              <MessageSquare className="h-3.5 w-3.5" />
+              <span>Chat about this document</span>
+            </button>
+          )}
+        </>
       )}
 
       {item.status === "FAILED" && (
         <div className="flex items-center gap-1.5 text-[10px] text-rose-600 font-semibold">
           <XCircle className="h-3.5 w-3.5" />
           <span>Ingestion failure: {item.error || "Failed to process document pages."}</span>
+        </div>
+      )}
+
+      {item.status === "DUPLICATE" && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-1.5 text-[10px] text-orange-600 font-semibold">
+            <FileText className="h-3.5 w-3.5" />
+            <span>This document was already uploaded</span>
+          </div>
+          {item.existingDocumentId ? (
+            <a
+              href={`/documents/${item.existingDocumentId}`}
+              className="inline-block text-[10px] font-medium text-primary hover:text-primary/80 hover:underline transition-colors"
+            >
+              View existing document →
+            </a>
+          ) : null}
         </div>
       )}
     </div>
