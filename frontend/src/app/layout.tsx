@@ -13,8 +13,8 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "RagCX — Enterprise AI Document Intelligence",
-  description: "Production-grade RAG platform for enterprise document Q&A and semantic search.",
+  title: "RagCX — AI Document Intelligence",
+  description: "RAG platform for document Q&A and semantic search.",
 };
 
 export default function RootLayout({

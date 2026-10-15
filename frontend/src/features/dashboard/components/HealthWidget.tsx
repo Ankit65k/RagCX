@@ -35,10 +35,10 @@ export default function HealthWidget() {
   }
 
   const services = [
-    { label: "AI Orchestrator", sub: "Ollama LLM", data: health.aiService,  icon: Cpu },
-    { label: "Redis Broker",    sub: "Queue & cache", data: health.redis,    icon: RefreshCw },
+    { label: "AI model", sub: "Ollama LLM", data: health.aiService,  icon: Cpu },
+    { label: "Queue",    sub: "Queue & cache", data: health.redis,    icon: RefreshCw },
     { label: "ChromaDB",        sub: "Vector store",  data: health.chromaDb, icon: HardDrive },
-    { label: "REST API",        sub: "Backend core",  data: health.backendApi, icon: ShieldCheck },
+    { label: "Backend",        sub: "Backend core",  data: health.backendApi, icon: ShieldCheck },
   ];
 
   return (

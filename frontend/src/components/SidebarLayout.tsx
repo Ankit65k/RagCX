@@ -76,7 +76,6 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
             {sidebarOpen && (
               <div className="min-w-0 animate-in fade-in duration-200">
                 <p className="text-sm font-bold text-foreground tracking-tight truncate">RagCX</p>
-                <p className="text-[10px] text-muted-foreground leading-none">Enterprise Portal</p>
               </div>
             )}
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { UploadCloud, AlertCircle } from "lucide-react";
+import { UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 
 interface FileDropzoneProps {
@@ -118,11 +118,6 @@ export default function FileDropzone({ onFileSelected, maxSizeMB = 50 }: FileDro
         <p className="text-xs text-muted-foreground mb-6 leading-normal">
           or click to browse local folders. Only PDF documents up to {maxSizeMB}MB are accepted.
         </p>
-
-        <div className="flex items-center gap-1.5 rounded-lg bg-secondary/50 px-3 py-1.5 text-[10px] font-medium text-muted-foreground">
-          <AlertCircle className="h-3.5 w-3.5" />
-          <span>Security Guard: Files are encrypted in transit.</span>
-        </div>
       </div>
     </div>
   );

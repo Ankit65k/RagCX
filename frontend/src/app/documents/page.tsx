@@ -96,10 +96,10 @@ export default function DocumentsWorkspacePage() {
             </div>
             <div>
               <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-                Document Library Workspace
+                Documents
               </h1>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Inspect vector index coverage, search filenames, and manage corporate datasets.
+                Search and manage your PDFs.
               </p>
             </div>
           </div>

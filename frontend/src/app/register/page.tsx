@@ -75,9 +75,6 @@ export default function RegisterPage() {
             </div>
             <div>
               <span className="text-lg font-bold text-white tracking-tight">RagCX</span>
-              <span className="ml-2 rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold text-white/90 uppercase tracking-widest">
-                Enterprise
-              </span>
             </div>
           </div>
 
@@ -135,7 +132,7 @@ export default function RegisterPage() {
                 Create your account
               </h2>
               <p className="mt-1.5 text-sm text-muted-foreground">
-                Start indexing and searching enterprise PDFs instantly.
+                Start indexing and searching PDFs instantly.
               </p>
             </div>
 

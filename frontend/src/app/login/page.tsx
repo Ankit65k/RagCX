@@ -10,11 +10,7 @@ import {
   Eye,
   EyeOff,
   Loader2,
-  Shield,
-  Zap,
-  FileSearch,
   ArrowRight,
-  Brain,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -26,31 +22,6 @@ const loginSchema = zod.object({
 });
 
 type LoginFormValues = zod.infer<typeof loginSchema>;
-
-// ─── Feature Bullets (Left Panel) ─────────────────────────────────────────
-
-const features = [
-  {
-    icon: Brain,
-    title: "Retrieval-Augmented Generation",
-    desc: "Ask natural-language questions across your entire document library.",
-  },
-  {
-    icon: FileSearch,
-    title: "Semantic Document Search",
-    desc: "Vector-powered search that understands context, not just keywords.",
-  },
-  {
-    icon: Shield,
-    title: "Enterprise-Grade Security",
-    desc: "JWT auth with refresh token rotation, session management, and RBAC.",
-  },
-  {
-    icon: Zap,
-    title: "Real-Time Processing",
-    desc: "Event-driven pipeline with Redis queues and async AI inference.",
-  },
-];
 
 // ─── Login Page ────────────────────────────────────────────────────────────
 
@@ -85,9 +56,6 @@ export default function LoginPage() {
             </div>
             <div>
               <span className="text-lg font-bold text-white tracking-tight">RagCX</span>
-              <span className="ml-2 rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold text-white/90 uppercase tracking-widest">
-                Enterprise
-              </span>
             </div>
           </div>
 
@@ -95,39 +63,20 @@ export default function LoginPage() {
           <div className="relative z-10 space-y-6 max-w-lg">
             <div>
               <h1 className="text-4xl font-black text-white leading-tight tracking-tight">
-                Enterprise AI
+                Ask your PDFs
                 <br />
-                <span className="text-white/70">Document Intelligence</span>
+                <span className="text-white/70">anything</span>
               </h1>
               <p className="mt-4 text-base text-white/60 leading-relaxed">
-                Chat with your entire document library using production-grade RAG.
-                Secure, fast, and built for teams.
+                Answers come only from your documents, with page references.
               </p>
-            </div>
-
-            {/* Feature list */}
-            <div className="space-y-4">
-              {features.map((f) => {
-                const Icon = f.icon;
-                return (
-                  <div key={f.title} className="flex items-start gap-4">
-                    <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/10 border border-white/15 backdrop-blur-sm">
-                      <Icon className="h-4 w-4 text-white/80" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-white">{f.title}</p>
-                      <p className="text-xs text-white/50 leading-relaxed">{f.desc}</p>
-                    </div>
-                  </div>
-                );
-              })}
             </div>
           </div>
 
           {/* Bottom attribution */}
           <div className="relative z-10 flex items-center gap-2">
             <div className="h-px flex-1 bg-white/10" />
-            <span className="text-xs text-white/30">Powered by Ollama · pgvector · Redis</span>
+            <span className="text-xs text-white/30">Runs locally with Ollama and ChromaDB</span>
             <div className="h-px flex-1 bg-white/10" />
           </div>
         </div>

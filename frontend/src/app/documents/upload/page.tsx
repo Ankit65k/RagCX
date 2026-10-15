@@ -7,7 +7,7 @@ import UploadQueue from "@/features/documents/components/UploadQueue";
 import UploadHistory from "@/features/documents/components/UploadHistory";
 import { UploadProgressInfo, useDocumentUpload } from "@/features/documents/hooks/useDocumentUpload";
 import { useAuthStore } from "@/core/store/authStore";
-import { FileUp, Info } from "lucide-react";
+import { FileUp } from "lucide-react";
 
 export default function DocumentUploadPage() {
   const { user } = useAuthStore();
@@ -69,10 +69,10 @@ export default function DocumentUploadPage() {
           </div>
           <div>
             <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-              Upload PDF Documents
+              Upload PDF
             </h1>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Ingest new reference documents into the vector store.
+              Add a document to chat with.
             </p>
           </div>
         </div>
@@ -80,18 +80,8 @@ export default function DocumentUploadPage() {
         {/* Wizard Main Grid Layout */}
         <div className="grid gap-6 md:grid-cols-3">
           {/* Left / Dropzone panel */}
-          <div className="md:col-span-2 space-y-6">
+          <div className="md:col-span-2">
             <FileDropzone onFileSelected={uploadFile} />
-            
-            <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-4 flex gap-3 text-xs text-blue-600 font-semibold leading-relaxed">
-              <Info className="h-4 w-4 shrink-0 mt-0.5" />
-              <div>
-                <p>Corporate Security Regulations Notice</p>
-                <p className="text-[10px] text-muted-foreground font-medium mt-1 leading-normal">
-                  All PDF uploads undergo text extraction, page alignment, embedding calculation via local vectors, and secure persistence in ChromaDB. Handlers log activity timeline traces.
-                </p>
-              </div>
-            </div>
           </div>
 
           {/* Right / Queue and history list panel */}

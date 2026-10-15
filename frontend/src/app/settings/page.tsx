@@ -51,10 +51,10 @@ export default function SettingsWorkspacePage() {
           </div>
           <div>
             <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-              System Settings & Administration
+              Settings
             </h1>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Configure parameters for LLM queries, chunking logic, and workspace settings.
+              Application preferences.
             </p>
           </div>
         </div>
@@ -65,7 +65,7 @@ export default function SettingsWorkspacePage() {
           {/* Navigation Sidebar Panel (Column 1) */}
           <div className="md:col-span-1 rounded-xl border border-border bg-card p-2.5 space-y-1">
             <div className="px-3 py-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-              Control Center
+              Sections
             </div>
             {navItems.map((item) => {
               const Icon = item.icon;

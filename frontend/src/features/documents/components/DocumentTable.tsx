@@ -81,8 +81,6 @@ export default function DocumentTable({
                 </div>
               </th>
 
-              <th className="p-4">Uploader</th>
-
               <th className="p-4 cursor-pointer hover:text-foreground" onClick={() => onSort("pageCount")}>
                 <div className="flex items-center gap-1.5">
                   Pages {renderSortIcon("pageCount")}
@@ -97,7 +95,7 @@ export default function DocumentTable({
           <tbody className="divide-y divide-border text-xs">
             {documents.length === 0 ? (
               <tr>
-                <td colSpan={7} className="p-8 text-center text-muted-foreground">
+                <td colSpan={6} className="p-8 text-center text-muted-foreground">
                   No documents found matching the criteria.
                 </td>
               </tr>
@@ -137,8 +135,6 @@ export default function DocumentTable({
                       })}
                     </td>
 
-                    <td className="p-4 text-muted-foreground">{doc.uploadedBy || "System"}</td>
-
                     <td className="p-4 font-medium text-muted-foreground">{doc.pageCount || 0} pgs</td>
 
                     <td className="p-4">
@@ -153,15 +149,15 @@ export default function DocumentTable({
                         <button
                           onClick={() => onViewDetails(doc)}
                           className="rounded-lg p-1.5 border border-border hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
-                          title="View Ingestion Details"
+                          title="Open"
                         >
                           <ArrowUpRight className="h-4 w-4" />
                         </button>
-                        
+
                         <button
                           onClick={() => onReprocess(doc.id)}
                           className="rounded-lg p-1.5 border border-border hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
-                          title="Reprocess Document"
+                          title="Reprocess"
                         >
                           <RefreshCw className="h-4 w-4" />
                         </button>
@@ -170,7 +166,7 @@ export default function DocumentTable({
                           <button
                             onClick={() => onDelete(doc.id)}
                             className="rounded-lg p-1.5 border border-destructive/20 hover:bg-destructive/10 text-destructive transition-colors"
-                            title="Soft Delete"
+                            title="Delete"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
