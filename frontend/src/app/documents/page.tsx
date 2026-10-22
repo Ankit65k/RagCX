@@ -87,18 +87,18 @@ export default function DocumentsWorkspacePage() {
   return (
     <ProtectedRoute>
       <div className="mx-auto max-w-7xl space-y-6 animate-in fade-in duration-300 pb-16">
-        
+
         {/* Title Header Row */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-primary/10 text-primary">
+            <div className="p-2 rounded-lg bg-primary/10 text-primary">
               <FolderGit2 className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+              <h1 className="text-xl font-semibold text-ink">
                 Documents
               </h1>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-sm text-ink-subtle mt-0.5">
                 Search and manage your PDFs.
               </p>
             </div>
@@ -107,7 +107,7 @@ export default function DocumentsWorkspacePage() {
           {isAdmin && (
             <button
               onClick={() => router.push("/documents/upload")}
-              className="flex items-center justify-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground hover:bg-primary/95 transition-all shadow-md shadow-primary/10 shrink-0"
+              className="flex items-center justify-center gap-1.5 rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary-hover transition-colors shrink-0"
             >
               <Plus className="h-4 w-4" />
               Upload PDF
@@ -134,16 +134,16 @@ export default function DocumentsWorkspacePage() {
 
         {/* 2. Document Data Grid */}
         {isLoading ? (
-          <div className="rounded-xl border border-border bg-card p-8 text-center animate-pulse space-y-4">
-            <div className="h-6 w-1/4 bg-muted rounded mx-auto"></div>
+          <div className="rounded-lg border border-hairline bg-surface-1 p-8 text-center animate-pulse space-y-4">
+            <div className="h-6 w-1/4 bg-surface-2 rounded mx-auto"></div>
             <div className="space-y-2">
               {[...Array(4)].map((_, idx) => (
-                <div key={idx} className="h-10 bg-muted rounded"></div>
+                <div key={idx} className="h-10 bg-surface-2 rounded"></div>
               ))}
             </div>
           </div>
         ) : isError || !documentResponse ? (
-          <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-8 text-center text-sm text-destructive">
+          <div className="rounded-lg border border-hairline bg-surface-1 p-8 text-center text-sm text-destructive">
             Failed to load documents catalog.
           </div>
         ) : (
@@ -164,23 +164,23 @@ export default function DocumentsWorkspacePage() {
 
             {/* Pagination Controls */}
             <div className="flex items-center justify-between py-2 text-xs">
-              <span className="text-muted-foreground font-medium">
+              <span className="text-ink-subtle font-medium">
                 Showing {documentResponse.items.length} of {documentResponse.total} items
               </span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setPage((p) => Math.max(p - 1, 1))}
                   disabled={page === 1}
-                  className="flex items-center gap-1.5 rounded-lg border border-border hover:bg-secondary px-3 py-1.5 font-semibold text-foreground transition-all disabled:opacity-50"
+                  className="flex items-center gap-1.5 rounded-md border border-hairline hover:bg-surface-2 px-3 py-1.5 font-medium text-ink transition-all disabled:opacity-50"
                 >
                   <ArrowLeft className="h-3.5 w-3.5" />
                   Prev
                 </button>
-                <span className="font-bold text-foreground px-1">Page {page}</span>
+                <span className="font-semibold text-ink px-1">Page {page}</span>
                 <button
                   onClick={() => setPage((p) => p + 1)}
                   disabled={page * pageSize >= documentResponse.total}
-                  className="flex items-center gap-1.5 rounded-lg border border-border hover:bg-secondary px-3 py-1.5 font-semibold text-foreground transition-all disabled:opacity-50"
+                  className="flex items-center gap-1.5 rounded-md border border-hairline hover:bg-surface-2 px-3 py-1.5 font-medium text-ink transition-all disabled:opacity-50"
                 >
                   Next
                   <ArrowRight className="h-3.5 w-3.5" />

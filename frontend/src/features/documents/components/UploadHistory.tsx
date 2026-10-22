@@ -2,7 +2,7 @@
 
 import React from "react";
 import { UploadProgressInfo } from "../hooks/useDocumentUpload";
-import { CheckCircle2, XCircle, RefreshCw, FileText } from "lucide-react";
+import { FileText, RefreshCw } from "lucide-react";
 import { documentsApi } from "../api/documentsApi";
 import { toast } from "sonner";
 
@@ -28,44 +28,44 @@ export default function UploadHistory({ history }: UploadHistoryProps) {
   };
 
   return (
-    <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-      <h3 className="text-sm font-bold text-foreground mb-4">Session Upload History</h3>
-      
-      <div className="space-y-3">
+    <div className="rounded-lg border border-hairline bg-surface-1 p-6">
+      <h3 className="text-sm font-semibold text-ink mb-4">Session Upload History</h3>
+
+      <div className="space-y-3 divide-y divide-hairline">
         {history.map((doc, idx) => (
           <div
             key={idx}
-            className="flex items-center justify-between rounded-xl border border-border bg-secondary/10 p-3"
+            className="flex items-center justify-between pt-3 first:pt-0"
           >
             <div className="flex items-center gap-3 overflow-hidden">
               <FileText className="h-4 w-4 text-primary shrink-0" />
               <div className="overflow-hidden">
-                <p className="text-xs font-semibold text-foreground truncate">{doc.filename}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">
+                <p className="text-xs font-medium text-ink truncate">{doc.filename}</p>
+                <p className="text-xs text-ink-subtle mt-0.5">
                   Uploaded at: {new Date().toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3 shrink-0">
-              <div className="flex items-center gap-1 text-[10px] font-semibold">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-ink-muted">
                 {doc.status === "COMPLETED" ? (
                   <>
-                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-                    <span className="text-emerald-500">Success</span>
+                    <span className="h-2 w-2 rounded-full bg-success shrink-0" />
+                    <span>Success</span>
                   </>
                 ) : (
                   <>
-                    <XCircle className="h-3.5 w-3.5 text-rose-500" />
-                    <span className="text-rose-500">Failed</span>
+                    <span className="h-2 w-2 rounded-full bg-destructive shrink-0" />
+                    <span>Failed</span>
                   </>
                 )}
               </div>
-              
+
               {doc.status === "COMPLETED" && doc.documentId && (
                 <button
                   onClick={() => handleReprocess(doc.documentId!, doc.filename)}
-                  className="rounded-lg p-1.5 border border-border hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                  className="rounded-md p-1.5 text-ink-subtle hover:bg-surface-2 hover:text-ink transition-colors"
                   title="Reprocess document"
                 >
                   <RefreshCw className="h-3.5 w-3.5" />

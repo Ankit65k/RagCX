@@ -90,10 +90,10 @@ export default function FileDropzone({ onFileSelected, maxSizeMB = 50 }: FileDro
       tabIndex={0}
       role="button"
       aria-label="Upload PDF Document file dropzone"
-      className={`border-2 border-dashed rounded-2xl p-10 text-center transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+      className={`border border-dashed rounded-lg p-10 text-center transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50 ${
         isDragActive
-          ? "border-primary bg-primary/5 scale-[0.99] shadow-lg shadow-primary/5"
-          : "border-border bg-card hover:bg-secondary/15 hover:border-primary/30"
+          ? "border-primary/60 bg-surface-2"
+          : "border-hairline bg-surface-1 hover:bg-surface-2"
       }`}
     >
       <input
@@ -106,16 +106,16 @@ export default function FileDropzone({ onFileSelected, maxSizeMB = 50 }: FileDro
       />
 
       <div className="flex flex-col items-center max-w-sm mx-auto">
-        <div className={`h-12 w-12 rounded-xl flex items-center justify-center mb-4 transition-transform ${
-          isDragActive ? "bg-primary text-white scale-110" : "bg-primary/10 text-primary"
+        <div className={`h-12 w-12 rounded-lg flex items-center justify-center mb-4 transition-colors ${
+          isDragActive ? "bg-primary text-primary-foreground" : "bg-surface-2 text-ink-subtle"
         }`}>
           <UploadCloud className="h-6 w-6" />
         </div>
-        
-        <h3 className="text-sm font-semibold text-foreground mb-1.5">
+
+        <h3 className="text-sm font-semibold text-ink mb-1.5">
           Drag and drop your PDF here
         </h3>
-        <p className="text-xs text-muted-foreground mb-6 leading-normal">
+        <p className="text-xs text-ink-subtle leading-relaxed">
           or click to browse local folders. Only PDF documents up to {maxSizeMB}MB are accepted.
         </p>
       </div>

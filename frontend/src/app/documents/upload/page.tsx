@@ -61,17 +61,17 @@ export default function DocumentUploadPage() {
   return (
     <ProtectedRoute>
       <div className="mx-auto max-w-7xl space-y-6 animate-in fade-in duration-300 pb-8">
-        
+
         {/* Title Header */}
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-primary/10 text-primary">
+          <div className="p-2 rounded-lg bg-primary/10 text-primary">
             <FileUp className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+            <h1 className="text-xl font-semibold text-ink">
               Upload PDF
             </h1>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="text-sm text-ink-subtle mt-0.5">
               Add a document to chat with.
             </p>
           </div>
