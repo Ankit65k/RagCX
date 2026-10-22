@@ -29,7 +29,7 @@ class RetrieveContextNode(WorkflowNode):
         try:
             query = state["query"]
             conversation_id = state.get("conversation_id")
-            top_k: int = state.get("top_k", 5)
+            top_k: int = state.get("top_k", 3)
             score_threshold: Optional[float] = state.get("score_threshold")
             document_ids = state.get("document_ids", [])  # List of document IDs to filter
 

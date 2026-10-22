@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import List
+from typing import List, Any
 from redis.asyncio import Redis
 from redis.asyncio.client import PubSub
 

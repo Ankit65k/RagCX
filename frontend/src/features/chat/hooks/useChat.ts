@@ -5,6 +5,7 @@ import { chatApi, ChatMessage } from "../api/chatApi";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { AxiosError } from "axios";
 
 export function useChatSessions() {
   const queryClient = useQueryClient();
@@ -106,8 +107,9 @@ export function useChatRoom(sessionId: string) {
         queryClient.setQueryData(["chat", "messages", sessionId], context.previousMessages);
       }
       // Better error message based on error type
-      const errorMsg = err?.response?.data?.error?.message || "Request timed out";
-      const isTimeout = err?.response?.status === 504 || errorMsg.includes("timed out");
+      const axiosError = err as AxiosError<{ error?: { message?: string } }>;
+      const errorMsg = (axiosError.response?.data as { error?: { message?: string } })?.error?.message || "Request timed out";
+      const isTimeout = axiosError.response?.status === 504 || errorMsg.includes("timed out");
 
       toast.error("Message Failed", {
         description: isTimeout

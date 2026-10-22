@@ -1,0 +1,121 @@
+{
+  "test_timestamp": "2026-10-02 09:01:37",
+  "models_tested": [
+    "llama3.2:1b",
+    "llama3.2:3b"
+  ],
+  "results": {
+    "llama3.2:1b": {
+      "model": "llama3.2:1b",
+      "runs": [
+        {
+          "run": 1,
+          "elapsed_seconds": 10.04,
+          "question_count": 5,
+          "questions": [
+            "What is the primary focus of machine learning?",
+            "How does supervised learning differ from unsupervised learning?",
+            "What is the main application of deep learning?",
+            "What is a common use of machine learning in business?",
+            "What is the primary benefit of using machine learning in customer behavior analysis?"
+          ],
+          "raw_response": "{\"questions\": [\"What is the primary focus of machine learning?\", \"How does supervised learning differ from unsupervised learning?\", \"What is the main application of deep learning?\", \"What is a common ...",
+          "success": true,
+          "error": null
+        },
+        {
+          "run": 2,
+          "elapsed_seconds": 5.53,
+          "question_count": 5,
+          "questions": [
+            "What is the primary focus of machine learning?",
+            "How does supervised learning differ from unsupervised learning?",
+            "What is the main advantage of using deep learning?",
+            "In what types of applications is machine learning commonly used?",
+            "What is the primary goal of using machine learning in business decision-making?"
+          ],
+          "raw_response": "{\"questions\": [\"What is the primary focus of machine learning?\", \"How does supervised learning differ from unsupervised learning?\", \"What is the main advantage of using deep learning?\", \"In what types...",
+          "success": true,
+          "error": null
+        },
+        {
+          "run": 3,
+          "elapsed_seconds": 5.59,
+          "question_count": 5,
+          "questions": [
+            "What is the primary focus of machine learning?",
+            "How does supervised learning differ from unsupervised learning?",
+            "What is the main application of deep learning in computer vision?",
+            "What is the primary benefit of using machine learning in predictive analytics?",
+            "What is the key characteristic of neural networks in deep learning?"
+          ],
+          "raw_response": "{\"questions\": [\"What is the primary focus of machine learning?\", \"How does supervised learning differ from unsupervised learning?\", \"What is the main application of deep learning in computer vision?\",...",
+          "success": true,
+          "error": null
+        }
+      ],
+      "stats": {
+        "success_rate": "3/3",
+        "avg_time": 7.053333333333334,
+        "min_time": 5.53,
+        "max_time": 10.04
+      }
+    },
+    "llama3.2:3b": {
+      "model": "llama3.2:3b",
+      "runs": [
+        {
+          "run": 1,
+          "elapsed_seconds": 45.71,
+          "question_count": 5,
+          "questions": [
+            "What is the primary goal of machine learning?",
+            "What is the main difference between supervised and unsupervised learning?",
+            "Can deep learning be used for tasks other than image recognition and natural language processing?",
+            "How do companies typically use machine learning?",
+            "What are some common applications of machine learning beyond those listed in the document?"
+          ],
+          "raw_response": "{\"questions\": [\"What is the primary goal of machine learning?\", \"What is the main difference between supervised and unsupervised learning?\", \"Can deep learning be used for tasks other than image recog...",
+          "success": true,
+          "error": null
+        },
+        {
+          "run": 2,
+          "elapsed_seconds": 8.84,
+          "question_count": 5,
+          "questions": [
+            "What is the primary goal of machine learning?",
+            "What is the main difference between supervised and unsupervised learning?",
+            "What are some common applications of deep learning?",
+            "How do companies use machine learning?",
+            "What are some examples of tasks that deep neural networks are particularly effective for?"
+          ],
+          "raw_response": "{\"questions\": [\"What is the primary goal of machine learning?\", \"What is the main difference between supervised and unsupervised learning?\", \"What are some common applications of deep learning?\", \"How...",
+          "success": true,
+          "error": null
+        },
+        {
+          "run": 3,
+          "elapsed_seconds": 9.37,
+          "question_count": 5,
+          "questions": [
+            "What is the primary goal of machine learning?",
+            "What is the main difference between supervised and unsupervised learning?",
+            "What are some common applications of deep learning?",
+            "How do companies use machine learning?",
+            "What are some examples of tasks that deep neural networks are particularly effective for?"
+          ],
+          "raw_response": "{\"questions\": [\"What is the primary goal of machine learning?\", \"What is the main difference between supervised and unsupervised learning?\", \"What are some common applications of deep learning?\", \"How...",
+          "success": true,
+          "error": null
+        }
+      ],
+      "stats": {
+        "success_rate": "3/3",
+        "avg_time": 21.30666666666667,
+        "min_time": 8.84,
+        "max_time": 45.71
+      }
+    }
+  }
+}

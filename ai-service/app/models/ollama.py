@@ -36,15 +36,15 @@ class OllamaProvider(LLMProvider):
         data: Dict[str, str] = response.json()
         return data.get("response", "")
 
-    async def chat(self, messages: List[Dict[str, str]], format: Optional[str] = None, timeout: float = 110.0) -> str:
+    async def chat(self, messages: List[Dict[str, str]], format: Optional[str] = None, timeout: float = 60.0) -> str:
         payload: Dict[str, str | bool | list | dict] = {
             "model": self.model,
             "messages": messages,
             "stream": False,
             "options": {
                 "temperature": settings.OLLAMA_TEMPERATURE,
-                "num_ctx": 8192,  # Increased from 2048 for larger prompts with retrieved chunks
-                "num_predict": 768,  # Increased from 200 to prevent JSON truncation
+                "num_ctx": 2048,  # Reduced for faster CPU processing
+                "num_predict": 150,  # Reduced for faster responses
             }
         }
         if format:

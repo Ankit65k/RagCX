@@ -61,5 +61,6 @@ class ChatEventHandler:
                 logger.error(f"ChatEventHandler: Finished event processing with errors: {result.error_message}")
 
         except Exception as e:
-            logger.error(f"ChatEventHandler: Exception handling event {event.eventId}. Error: {str(e)}")
+            logger.error(f"ChatEventHandler: Exception handling event {event.eventId}. Error: {str(e)}", exc_info=True)
             # Do not re-raise to prevent worker process crashes (handled inside pipeline fallback)
+            # Note: Pipeline should have already published error response via fallback handler

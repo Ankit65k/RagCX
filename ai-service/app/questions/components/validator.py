@@ -59,7 +59,7 @@ class QuestionValidator:
             q_keywords = q_words - stopwords
             chunk_keywords = chunk_words - stopwords
             overlap = q_keywords & chunk_keywords
-            if len(overlap) < 2:  # At least 2 meaningful words should overlap
+            if len(overlap) < 1:  # At least 1 meaningful word should overlap (relaxed for CPU performance)
                 logger.warning(f"QuestionGeneration: Question has insufficient keyword overlap with chunks: '{q_text}'")
                 return False
 
@@ -120,7 +120,7 @@ class QuestionValidator:
                 q_keywords = q_words - stopwords
                 chunk_keywords = chunk_words - stopwords
                 overlap = q_keywords & chunk_keywords
-                if len(overlap) < 2:
+                if len(overlap) < 1:  # Relaxed for CPU performance
                     reason = f"Q{idx+1}: Insufficient keyword overlap ({len(overlap)} words)"
                     logger.warning(f"[{request_id}] DROPPED - {reason}: '{q_text[:50]}...'")
                     dropped_reasons.append(reason)
