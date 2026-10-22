@@ -83,8 +83,8 @@ export default function AppProviders({ children }: AppProvidersProps) {
           
           {/* Simple reusable global modal container */}
           {modalState.isOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md">
-              <div className="w-full max-w-lg rounded-2xl bg-card p-7 shadow-premium shadow-black/90 animate-in fade-in zoom-in-95 duration-200">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+              <div className="w-full max-w-lg rounded-lg bg-surface-1 border border-hairline p-7 shadow-premium animate-in fade-in zoom-in-95 duration-200">
                 <div className="flex items-center justify-between pb-3 mb-4">
                   <h3 className="text-lg font-semibold text-foreground tracking-tight">{modalState.title}</h3>
                   <button

@@ -11,6 +11,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Shadcn-compatible tokens
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
@@ -24,6 +25,8 @@ const config: Config = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          hover: "hsl(var(--primary-hover))",
+          focus: "hsl(var(--primary-focus))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -44,16 +47,54 @@ const config: Config = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+
+        // Direct Linear design tokens
+        canvas: "hsl(var(--canvas))",
+        ink: {
+          DEFAULT: "hsl(var(--ink))",
+          muted: "hsl(var(--ink-muted))",
+          subtle: "hsl(var(--ink-subtle))",
+          tertiary: "hsl(var(--ink-tertiary))",
+        },
+        surface: {
+          1: "hsl(var(--surface-1))",
+          2: "hsl(var(--surface-2))",
+          3: "hsl(var(--surface-3))",
+          4: "hsl(var(--surface-4))",
+        },
+        hairline: {
+          DEFAULT: "hsl(var(--hairline))",
+          strong: "hsl(var(--hairline-strong))",
+          tertiary: "hsl(var(--hairline-tertiary))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--semantic-success))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        lg: "12px",
+        md: "8px",
+        sm: "6px",
+        xs: "4px",
+        pill: "9999px",
       },
       boxShadow: {
-        premium: '0 10px 40px -10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(144, 93, 247, 0.05)',
-        glow: '0 0 25px rgba(144, 93, 247, 0.12), 0 0 50px rgba(144, 93, 247, 0.04)',
-        card: '0 4px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(144, 93, 247, 0.03)',
+        premium: "0 4px 12px rgba(0, 0, 0, 0.4)",
+        glow: "0 0 0 1px hsl(var(--primary) / 0.3)",
+      },
+      spacing: {
+        xxs: "4px",
+        xs: "8px",
+        sm: "12px",
+        md: "16px",
+        lg: "24px",
+        xl: "32px",
+        xxl: "48px",
+        section: "96px",
+      },
+      fontFamily: {
+        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
     },
   },
