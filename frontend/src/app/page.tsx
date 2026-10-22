@@ -8,7 +8,6 @@ import RecentUploadsWidget from "@/features/dashboard/components/RecentUploadsWi
 import RecentConversationsWidget from "@/features/dashboard/components/RecentConversationsWidget";
 import ActivityTimeline from "@/features/dashboard/components/ActivityTimeline";
 import QuickActions from "@/features/dashboard/components/QuickActions";
-import AnalyticsCharts from "@/features/dashboard/components/AnalyticsCharts";
 import { useAuthStore } from "@/core/store/authStore";
 
 export default function DashboardPage() {
@@ -38,19 +37,14 @@ export default function DashboardPage() {
         {/* Row 2 — Quick actions */}
         <QuickActions />
 
-        {/* Row 3 — Health + Charts */}
-        <div className="grid gap-6 lg:grid-cols-5">
-          <div className="lg:col-span-2">
-            <HealthWidget />
-          </div>
-          <div className="lg:col-span-3">
-            <AnalyticsCharts />
-          </div>
+        {/* Row 3 — Health + Recent Uploads */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          <HealthWidget />
+          <RecentUploadsWidget />
         </div>
 
-        {/* Row 4 — Tables + Timeline */}
-        <div className="grid gap-6 lg:grid-cols-3">
-          <RecentUploadsWidget />
+        {/* Row 4 — Recent Conversations + Timeline */}
+        <div className="grid gap-6 lg:grid-cols-2">
           <RecentConversationsWidget />
           <ActivityTimeline />
         </div>
