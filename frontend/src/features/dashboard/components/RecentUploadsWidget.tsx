@@ -2,12 +2,12 @@
 
 import React from "react";
 import { useRecentUploads } from "../hooks/useDashboard";
-import { FileText, Loader2, CheckCircle2, XCircle, Clock } from "lucide-react";
+import { FileText, Loader2, CheckCircle2, XCircle } from "lucide-react";
 
 const STATUS = {
-  COMPLETED:  { icon: CheckCircle2, color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/15", label: "Done" },
-  PROCESSING: { icon: Loader2,      color: "text-amber-400 bg-amber-500/10 border-amber-500/15",   label: "Processing", spin: true },
-  FAILED:     { icon: XCircle,      color: "text-rose-400 bg-rose-500/10 border-rose-500/15",    label: "Failed" },
+  COMPLETED:  { icon: CheckCircle2, color: "text-success",             label: "Done" },
+  PROCESSING: { icon: Loader2,      color: "text-warning",             label: "Processing", spin: true },
+  FAILED:     { icon: XCircle,      color: "text-destructive",         label: "Failed" },
 } as const;
 
 export default function RecentUploadsWidget() {
@@ -15,31 +15,31 @@ export default function RecentUploadsWidget() {
 
   if (isLoading) {
     return (
-      <div className="glass rounded-2xl p-6 animate-pulse space-y-3 h-full">
-        <div className="h-4 w-40 bg-muted rounded" />
-        {[...Array(4)].map((_, i) => <div key={i} className="h-11 bg-muted rounded-xl" />)}
+      <div className="bg-surface-1 border border-hairline rounded-lg p-4 animate-pulse space-y-3 h-full">
+        <div className="h-4 w-40 bg-surface-2 rounded" />
+        {[...Array(4)].map((_, i) => <div key={i} className="h-11 bg-surface-2 rounded" />)}
       </div>
     );
   }
 
   if (isError || !uploads) {
     return (
-      <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6 text-sm text-destructive text-center h-full flex items-center justify-center">
+      <div className="rounded-lg border border-hairline bg-surface-1 p-4 text-xs text-ink-subtle text-center h-full flex items-center justify-center">
         Failed to load uploads.
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-5 rounded-2xl glass p-6 h-full">
+    <div className="flex flex-col gap-4 bg-surface-1 border border-hairline rounded-lg p-4 h-full">
       <div>
-        <h3 className="text-sm font-bold text-foreground tracking-tight">Recent Uploads</h3>
-        <p className="text-xs text-muted-foreground/80 mt-0.5">Latest ingested documents</p>
+        <h3 className="text-sm font-semibold text-ink tracking-tight">Recent Uploads</h3>
+        <p className="text-xs text-ink-subtle mt-0.5">Latest ingested documents</p>
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col divide-y divide-hairline">
         {uploads.length === 0 && (
-          <p className="text-sm text-muted-foreground/80 text-center py-6">No documents yet.</p>
+          <p className="text-xs text-ink-subtle text-center py-4">No documents yet.</p>
         )}
         {uploads.map((doc) => {
           const st = STATUS[doc.status as keyof typeof STATUS] ?? STATUS.PROCESSING;
@@ -48,20 +48,20 @@ export default function RecentUploadsWidget() {
           return (
             <div
               key={doc.id}
-              className="flex items-center gap-3 rounded-xl bg-secondary/25 px-3 py-2.5 hover:bg-secondary/55 hover:shadow-sm hover:shadow-black/10 transition-all"
+              className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0 hover:bg-surface-2 px-2 -mx-2 rounded transition-colors"
             >
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                <FileText className="h-4 w-4 text-primary" />
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-surface-2">
+                <FileText className="h-4 w-4 text-ink-subtle" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold text-foreground truncate" title={doc.filename}>
+                <p className="text-xs font-medium text-ink truncate" title={doc.filename}>
                   {doc.filename}
                 </p>
-                <p className="text-[10px] text-muted-foreground/80 mt-0.5">{doc.pageCount} pages</p>
+                <p className="text-xs text-ink-subtle mt-0.5">{doc.pageCount} pages</p>
               </div>
-              <div className={`flex items-center gap-1 shrink-0 rounded-lg px-2.5 py-1 border text-[10px] font-bold ${st.color}`}>
-                <Icon className={`h-3 w-3 ${(st as any).spin ? "animate-spin" : ""}`} />
-                {st.label}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className={`h-1.5 w-1.5 rounded-full ${st.color}`} />
+                <span className="text-xs font-medium text-ink-muted">{st.label}</span>
               </div>
             </div>
           );

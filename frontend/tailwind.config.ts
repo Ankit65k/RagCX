@@ -71,6 +71,9 @@ const config: Config = {
           DEFAULT: "hsl(var(--semantic-success))",
           foreground: "hsl(var(--primary-foreground))",
         },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+        },
       },
       borderRadius: {
         lg: "12px",

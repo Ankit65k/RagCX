@@ -31,6 +31,7 @@
 
     /* Semantic colors */
     --semantic-success: 138 62% 44%;     /* #27a644 */
+    --warning: 38 56% 56%;               /* #d4a24c - muted amber/gold */
 
     /* Shadcn-compatible mappings */
     --background: 240 25% 1%;            /* same as canvas */

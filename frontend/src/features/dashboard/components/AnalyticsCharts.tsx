@@ -16,31 +16,33 @@ export default function AnalyticsCharts() {
   return (
     <div className="grid gap-6 sm:grid-cols-2">
       {/* 1. Document Ingestion Trend (SVG Area Chart) */}
-      <div className="rounded-2xl glass p-6 flex flex-col justify-between">
+      <div className="bg-surface-1 border border-hairline rounded-lg p-4 flex flex-col justify-between">
         <div>
-          <div className="flex items-center gap-2 text-foreground font-semibold text-sm mb-1">
-            <TrendingUp className="h-4 w-4 text-primary" />
+          <div className="flex items-center gap-2 text-ink font-medium text-sm mb-1">
+            <TrendingUp className="h-4 w-4 text-ink-subtle" />
             <span>Document Ingestion Trend</span>
           </div>
-          <p className="text-[10px] text-muted-foreground/80">Monthly count of processed chunks ingested</p>
+          <p className="text-xs text-ink-subtle">Monthly count of processed chunks ingested</p>
         </div>
- 
+
         {/* Custom SVG Area Visualization */}
         <div className="h-32 w-full mt-6 relative">
           <svg className="h-full w-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="rgb(59, 130, 246)" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="rgb(59, 130, 246)" stopOpacity="0.0" />
-              </linearGradient>
-            </defs>
-            <polyline fill="url(#areaGrad)" points={areaPoints} />
-            <polyline fill="none" stroke="rgb(59, 130, 246)" strokeWidth="2.5" points={areaStrokePoints} />
+            <polyline
+              fill="hsl(var(--primary) / 0.15)"
+              points={areaPoints}
+            />
+            <polyline
+              fill="none"
+              stroke="hsl(var(--primary))"
+              strokeWidth="2"
+              points={areaStrokePoints}
+            />
           </svg>
-          
-          {/* Legend Coordinates */}
-          <div className="absolute inset-0 flex justify-between pointer-events-none text-[8px] text-muted-foreground/60 select-none">
-            <div className="flex flex-col justify-between h-full border-r border-dashed pr-1">
+
+          {/* Y-Axis labels */}
+          <div className="absolute inset-0 flex justify-between pointer-events-none text-xs select-none" style={{ color: "hsl(var(--ink-subtle))" }}>
+            <div className="flex flex-col justify-between h-full pr-1.5">
               <span>100</span>
               <span>50</span>
               <span>0</span>
@@ -48,9 +50,9 @@ export default function AnalyticsCharts() {
             <div className="flex-1"></div>
           </div>
         </div>
- 
+
         {/* X-Axis labels */}
-        <div className="flex justify-between text-[9px] text-muted-foreground font-semibold px-2 mt-2">
+        <div className="flex justify-between text-xs text-ink-subtle font-medium px-2 mt-2">
           <span>Jan</span>
           <span>Feb</span>
           <span>Mar</span>
@@ -59,27 +61,29 @@ export default function AnalyticsCharts() {
           <span>Jun</span>
         </div>
       </div>
- 
+
       {/* 2. Conversation Trends (SVG Bar Chart) */}
-      <div className="rounded-2xl glass p-6 flex flex-col justify-between">
+      <div className="bg-surface-1 border border-hairline rounded-lg p-4 flex flex-col justify-between">
         <div>
-          <div className="flex items-center gap-2 text-foreground font-semibold text-sm mb-1">
-            <Sparkles className="h-4 w-4 text-purple-500" />
+          <div className="flex items-center gap-2 text-ink font-medium text-sm mb-1">
+            <Sparkles className="h-4 w-4 text-ink-subtle" />
             <span>Conversational Activity Volume</span>
           </div>
-          <p className="text-[10px] text-muted-foreground/80">Total messages answered by model instance</p>
+          <p className="text-xs text-ink-subtle">Total messages answered by model instance</p>
         </div>
 
         {/* Custom SVG Bar Chart */}
         <div className="h-32 w-full mt-6 flex items-end justify-between px-2 gap-4">
           {barData.map((val, idx) => (
-            <div key={idx} className="flex-1 flex flex-col items-center gap-2 group">
-              {/* Dynamic animated bar with premium gradient fill */}
+            <div key={idx} className="flex-1 flex flex-col items-center gap-2">
               <div
-                className="w-full rounded-t bg-gradient-to-t from-primary/80 to-primary shadow-lg shadow-primary/10 group-hover:scale-y-105 transition-all origin-bottom"
-                style={{ height: `${val}px` }}
+                className="w-full rounded-t-sm transition-all origin-bottom hover:opacity-80"
+                style={{
+                  height: `${val}px`,
+                  backgroundColor: "hsl(var(--primary))"
+                }}
               ></div>
-              <span className="text-[9px] text-muted-foreground font-semibold">{barLabels[idx]}</span>
+              <span className="text-xs text-ink-subtle font-medium">{barLabels[idx]}</span>
             </div>
           ))}
         </div>
