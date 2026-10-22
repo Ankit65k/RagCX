@@ -10,32 +10,28 @@ const actions = [
     desc: "Start an AI conversation",
     icon: MessageSquare,
     path: "/chat",
-    gradient: "from-violet-500 to-purple-600",
-    glow: "shadow-violet-500/30",
+    isPrimary: true,
   },
   {
     label: "Upload PDF",
     desc: "Ingest a document",
     icon: UploadCloud,
     path: "/documents/upload",
-    gradient: "from-blue-500 to-cyan-600",
-    glow: "shadow-blue-500/30",
+    isPrimary: false,
   },
   {
     label: "My Library",
     desc: "Manage documents",
     icon: FileText,
     path: "/documents",
-    gradient: "from-emerald-500 to-teal-600",
-    glow: "shadow-emerald-500/30",
+    isPrimary: false,
   },
   {
     label: "Settings",
     desc: "Configure the system",
     icon: Settings,
     path: "/settings",
-    gradient: "from-slate-500 to-gray-600",
-    glow: "shadow-slate-500/30",
+    isPrimary: false,
   },
 ];
 
@@ -50,17 +46,22 @@ export default function QuickActions() {
           <button
             key={act.path}
             onClick={() => router.push(act.path)}
-            className="group card-glow relative overflow-hidden flex items-center gap-4 rounded-2xl glass px-5 py-4.5 text-left"
+            className="group flex items-center gap-3.5 bg-surface-1 border border-hairline rounded-lg px-4 py-3.5 text-left transition-colors hover:bg-surface-2 hover:border-hairline-strong"
           >
-            {/* Icon with gradient */}
             <div
-              className={`flex h-10 w-10 shrink-0 items-center  justify-center rounded-xl bg-gradient-to-br ${act.gradient} shadow-lg ${act.glow} transition-transform group-hover:scale-105`}
+              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${
+                act.isPrimary
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-surface-2 text-ink-subtle"
+              }`}
             >
-              <Icon className="h-5 w-5 text-white" />
+              <Icon className="h-5 w-5" />
             </div>
-            <div className="min-w-0 p-4">
-              <p className="text-sm font-bold text-foreground group-hover:text-primary transition-colors duration-150 truncate">{act.label}</p>
-              <p className="text-[11px] text-muted-foreground/80 mt-0.5 truncate">{act.desc}</p>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-ink truncate transition-colors">
+                {act.label}
+              </p>
+              <p className="text-xs text-ink-subtle truncate">{act.desc}</p>
             </div>
           </button>
         );

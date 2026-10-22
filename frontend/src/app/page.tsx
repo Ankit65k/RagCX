@@ -20,14 +20,14 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-      <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-300">
+      <div className="max-w-7xl mx-auto space-y-8 animate-fade-in">
 
         {/* Page header */}
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            Welcome back, <span className="gradient-text">{name}</span>
+          <h1 className="text-2xl font-bold tracking-tight text-ink">
+            Welcome back, <span className="text-ink-muted">{name}</span>
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-sm text-ink-subtle">
             Your documents at a glance.
           </p>
         </div>
