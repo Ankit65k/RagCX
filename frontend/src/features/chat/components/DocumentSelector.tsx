@@ -50,9 +50,9 @@ export default function DocumentSelector({
     <div className={cn("relative", className)}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card hover:bg-secondary/50 transition-colors text-xs font-medium"
+        className="flex items-center gap-2 px-3 py-2 rounded-md border border-hairline bg-surface-1 hover:bg-surface-2 text-xs font-medium transition-colors"
       >
-        <FileText className="h-4 w-4 text-primary" />
+        <FileText className="h-4 w-4 text-ink-subtle" />
         <span>
           {selectedCount === 0
             ? "All documents"
@@ -69,22 +69,22 @@ export default function DocumentSelector({
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute top-full left-0 mt-2 w-72 rounded-xl border border-border bg-card shadow-lg z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-            <div className="p-3 border-b border-border bg-secondary/20">
+          <div className="absolute top-full left-0 mt-2 w-72 rounded-lg border border-hairline bg-surface-1 shadow-md z-50 overflow-hidden">
+            <div className="p-3 border-b border-hairline bg-surface-2">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                <span className="text-xs font-medium text-ink-subtle uppercase tracking-wide">
                   Select Documents
                 </span>
                 <div className="flex gap-1">
                   <button
                     onClick={selectAll}
-                    className="text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                    className="text-xs px-2 py-0.5 rounded-md border border-hairline bg-surface-3 text-ink-subtle hover:bg-surface-2 transition-colors"
                   >
                     All
                   </button>
                   <button
                     onClick={clearSelection}
-                    className="text-[10px] px-2 py-0.5 rounded bg-muted text-muted-foreground hover:bg-secondary transition-colors"
+                    className="text-xs px-2 py-0.5 rounded-md border border-hairline bg-surface-2 text-ink-subtle hover:bg-surface-3 transition-colors"
                   >
                     Clear
                   </button>
@@ -94,7 +94,7 @@ export default function DocumentSelector({
 
             <div className="max-h-64 overflow-y-auto">
               {documents.length === 0 ? (
-                <div className="p-4 text-center text-xs text-muted-foreground">
+                <div className="p-4 text-center text-xs text-ink-subtle">
                   No documents uploaded yet
                 </div>
               ) : (
@@ -105,26 +105,26 @@ export default function DocumentSelector({
                       key={doc.id}
                       onClick={() => toggleDocument(doc.id)}
                       className={cn(
-                        "w-full flex items-center gap-3 p-3 hover:bg-secondary/30 transition-colors text-left",
-                        isSelected && "bg-primary/5"
+                        "w-full flex items-center gap-3 p-3 hover:bg-surface-2 transition-colors text-left",
+                        isSelected && "bg-primary/10"
                       )}
                     >
                       <div
                         className={cn(
-                          "h-4 w-4 rounded border-2 flex items-center justify-center transition-colors",
+                          "h-4 w-4 rounded border flex items-center justify-center transition-colors",
                           isSelected
-                            ? "bg-primary border-primary"
-                            : "border-border"
+                            ? "border-primary bg-primary"
+                            : "border-hairline bg-surface-1"
                         )}
                       >
-                        {isSelected && <Check className="h-3 w-3 text-white" />}
+                        {isSelected && <Check className="h-3 w-3 text-primary-foreground" />}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-foreground truncate">
+                        <p className="text-xs font-medium text-ink truncate">
                           {doc.filename || doc.originalFileName}
                         </p>
                         {(doc.createdAt || doc.uploadedAt) && (
-                          <p className="text-[10px] text-muted-foreground">
+                          <p className="text-xs text-ink-subtle">
                             {new Date(doc.createdAt || doc.uploadedAt!).toLocaleDateString()}
                           </p>
                         )}
@@ -136,8 +136,8 @@ export default function DocumentSelector({
             </div>
 
             {selectedCount > 0 && (
-              <div className="p-3 border-t border-border bg-secondary/10">
-                <p className="text-[10px] text-muted-foreground">
+              <div className="p-3 border-t border-hairline bg-surface-2">
+                <p className="text-xs text-ink-subtle">
                   Chat will query {allSelected ? "all" : selectedCount} document{selectedCount > 1 ? "s" : ""}
                 </p>
               </div>

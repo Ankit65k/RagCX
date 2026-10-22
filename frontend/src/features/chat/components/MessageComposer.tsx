@@ -25,7 +25,7 @@ export default function MessageComposer({ onSend, disabled = false }: MessageCom
     if (!text.trim() || disabled) return;
     onSend(text.trim());
     setText("");
-    
+
     // Focus back on composer
     setTimeout(() => {
       textareaRef.current?.focus();
@@ -41,22 +41,22 @@ export default function MessageComposer({ onSend, disabled = false }: MessageCom
   };
 
   return (
-    <div className="border-t border-border bg-card p-4">
-      <div className="relative max-w-4xl mx-auto flex items-end gap-3 rounded-2xl border border-border bg-background px-4 py-3 shadow-md focus-within:ring-2 focus-within:ring-primary/50 transition-all">
+    <div className="border-t border-hairline bg-surface-1 p-4">
+      <div className="relative max-w-4xl mx-auto flex items-end gap-3 rounded-lg border border-hairline bg-surface-1 px-4 py-3 focus-within:ring-2 focus-within:ring-primary/50 transition-all">
         <textarea
           ref={textareaRef}
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ask a question about the uploaded document library..."
-          className="flex-1 max-h-36 min-h-[24px] resize-none bg-transparent pr-12 text-xs text-foreground focus:outline-none leading-relaxed"
+          className="flex-1 max-h-36 min-h-[24px] resize-none bg-transparent pr-12 text-sm text-ink focus:outline-none leading-relaxed"
           rows={1}
           disabled={disabled}
         />
-        
+
         <div className="flex items-center gap-2">
           {/* Shift Enter Helper indicator */}
-          <span className="hidden sm:inline-flex items-center gap-0.5 text-[8px] text-muted-foreground select-none font-medium">
+          <span className="hidden sm:inline-flex items-center gap-0.5 text-xs text-ink-subtle select-none font-medium">
             <span>Enter to Send</span>
             <CornerDownLeft className="h-2 w-2" />
           </span>
@@ -64,7 +64,7 @@ export default function MessageComposer({ onSend, disabled = false }: MessageCom
           <button
             onClick={handleSend}
             disabled={!text.trim() || disabled}
-            className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-white hover:bg-primary/95 transition-all disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+            className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
             aria-label="Transmit Prompt"
           >
             <Send className="h-4 w-4" />
