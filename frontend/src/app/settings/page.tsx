@@ -46,14 +46,14 @@ export default function SettingsWorkspacePage() {
       <div className="mx-auto max-w-7xl space-y-6 animate-in fade-in duration-300 pb-16">
         {/* Title Header */}
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-primary/10 text-primary">
+          <div className="p-2 rounded-lg bg-primary/10 text-primary">
             <Settings className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+            <h1 className="text-xl font-semibold text-ink">
               Settings
             </h1>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="text-sm text-ink-subtle mt-0.5">
               Application preferences.
             </p>
           </div>
@@ -61,10 +61,10 @@ export default function SettingsWorkspacePage() {
 
         {/* Settings Navigation Layout Grid */}
         <div className="grid gap-6 md:grid-cols-4 items-start">
-          
+
           {/* Navigation Sidebar Panel (Column 1) */}
-          <div className="md:col-span-1 rounded-xl border border-border bg-card p-2.5 space-y-1">
-            <div className="px-3 py-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+          <div className="md:col-span-1 rounded-lg border border-hairline bg-surface-1 p-2.5 space-y-1">
+            <div className="px-3 py-2 text-xs font-medium text-ink-subtle">
               Sections
             </div>
             {navItems.map((item) => {
@@ -74,10 +74,10 @@ export default function SettingsWorkspacePage() {
                 <button
                   key={item.id}
                   onClick={() => setActiveSection(item.id as SettingsSection)}
-                  className={`w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-all ${
+                  className={`w-full flex items-center gap-2.5 rounded-md px-3 py-2 text-xs font-medium transition-all ${
                     isActive
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-ink-subtle hover:bg-surface-2 hover:text-ink"
                   }`}
                 >
                   <Icon className="h-4 w-4 shrink-0" />
@@ -88,13 +88,13 @@ export default function SettingsWorkspacePage() {
           </div>
 
           {/* Form Content Panel (Column 2) */}
-          <div className="md:col-span-3 rounded-xl border border-border bg-card p-6 shadow-sm min-h-[300px]">
+          <div className="md:col-span-3 rounded-lg border border-hairline bg-surface-1 p-6 min-h-[300px]">
             {isLoading ? (
-              <div className="h-48 flex items-center justify-center text-xs text-muted-foreground animate-pulse">
+              <div className="h-48 flex items-center justify-center text-xs text-ink-subtle animate-pulse">
                 Loading configuration data...
               </div>
             ) : isError || !settings ? (
-              <div className="h-48 flex items-center justify-center text-xs text-destructive bg-destructive/5 border border-destructive/25 rounded-xl">
+              <div className="h-48 flex items-center justify-center text-sm text-destructive bg-surface-2 border border-hairline rounded-lg">
                 Failed to retrieve cluster configuration.
               </div>
             ) : (
