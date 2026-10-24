@@ -65,27 +65,40 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
         }`}
       >
         {/* Brand header */}
-        <div className="flex h-14 items-center justify-between px-3">
-          <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
-            {/* Logo mark - simple lavender accent */}
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground font-bold text-sm">
-              R
-            </div>
-            {sidebarOpen && (
-              <div className="min-w-0 animate-fade-in">
-                <p className="text-sm font-semibold text-foreground tracking-tight truncate">RagCX</p>
+        {sidebarOpen ? (
+          <div className="flex h-14 items-center px-3">
+            <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground font-bold text-sm">
+                R
               </div>
-            )}
-          </div>
-          {sidebarOpen && (
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-ink tracking-tight truncate">RagCX</p>
+              </div>
+            </div>
             <button
               onClick={toggleSidebar}
-              className="ml-1 shrink-0 rounded-md p-1.5 text-ink-subtle hover:bg-surface-2 hover:text-foreground transition-colors"
+              aria-label="Collapse sidebar"
+              title="Collapse sidebar"
+              className="ml-auto shrink-0 rounded-md p-1.5 text-ink-subtle hover:bg-surface-2 hover:text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <PanelLeftClose className="h-4 w-4" />
             </button>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-2 py-3 px-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground font-bold text-sm">
+              R
+            </div>
+            <button
+              onClick={toggleSidebar}
+              aria-label="Expand sidebar"
+              title="Expand sidebar"
+              className="rounded-md p-1.5 text-ink-subtle hover:bg-surface-2 hover:text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              <PanelLeft className="h-4 w-4" />
+            </button>
+          </div>
+        )}
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
@@ -149,17 +162,6 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
 
           {/* Controls */}
           <div className={`flex items-center gap-1.5 ${sidebarOpen ? "justify-between" : "flex-col"}`}>
-            {/* Expand toggle (icon-only mode) */}
-            {!sidebarOpen && (
-              <button
-                onClick={toggleSidebar}
-                className="flex h-8 w-8 items-center justify-center rounded-md text-ink-subtle hover:bg-surface-2 hover:text-foreground transition-colors"
-                title="Expand sidebar"
-              >
-                <PanelLeft className="h-4 w-4" />
-              </button>
-            )}
-
             {/* Sign out */}
             {sidebarOpen && (
               <button
