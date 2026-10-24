@@ -139,7 +139,7 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
                   <p className="text-xs font-semibold text-foreground truncate leading-none">
                     {userName}
                   </p>
-                  <p className="text-[10px] text-ink-subtle truncate mt-0.5">
+                  <p className="text-xs text-ink-subtle truncate mt-0.5">
                     {user.role}
                   </p>
                 </div>

@@ -89,7 +89,7 @@ export default function AppProviders({ children }: AppProvidersProps) {
                   <h3 className="text-lg font-semibold text-foreground tracking-tight">{modalState.title}</h3>
                   <button
                     onClick={closeModal}
-                    className="rounded-lg p-1 text-muted-foreground hover:bg-secondary hover:text-foreground transition-all"
+                    className="rounded-lg p-1 text-ink-subtle hover:bg-surface-2 hover:text-ink transition-all"
                   >
                     ✕
                   </button>
@@ -98,7 +98,7 @@ export default function AppProviders({ children }: AppProvidersProps) {
                 <div className="flex justify-end gap-3">
                   <button
                     onClick={closeModal}
-                    className="rounded-xl px-5 py-2.5 bg-secondary text-foreground hover:bg-secondary/80 hover:shadow-md hover:shadow-black/20 transition-all text-sm font-semibold"
+                    className="rounded-lg px-5 py-2.5 bg-surface-2 text-ink hover:bg-surface-2/80 hover:shadow-md hover:shadow-black/20 transition-all text-sm font-semibold"
                   >
                     Close
                   </button>
