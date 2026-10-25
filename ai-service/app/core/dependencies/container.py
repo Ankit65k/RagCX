@@ -4,7 +4,7 @@ import redis.asyncio as redis
 from dependency_injector import containers, providers
 
 from app.core.config.settings import settings
-from app.models.ollama import OllamaProvider
+from app.models.factory import create_llm_provider
 from app.embeddings.ollama import OllamaEmbeddingProvider
 from app.redis.dispatcher import HandlerRegistry
 from app.redis.worker import RedisWorker
@@ -101,7 +101,7 @@ class Container(containers.DeclarativeContainer):
 
     # 5. LLM Provider Provider
     llm_provider = providers.Singleton(
-        OllamaProvider,
+        create_llm_provider,
         client=http_client,
     )
 
