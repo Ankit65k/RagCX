@@ -61,8 +61,10 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: SecretStr = Field(default=SecretStr(""))
     GEMINI_MODEL: str = Field(default="")
     GEMINI_FALLBACK_MODEL: str = Field(default="")
-    GEMINI_TOTAL_BUDGET: float = Field(default=25.0)  # Total time budget for Gemini attempts in seconds
-    GEMINI_PER_ATTEMPT_CAP: float = Field(default=15.0)  # Cap per individual Gemini attempt in seconds
+    GEMINI_TOTAL_BUDGET: float = Field(default=30.0)  # Total time budget for Gemini attempts in seconds
+    GEMINI_PER_ATTEMPT_CAP: float = Field(default=20.0)  # Cap per individual Gemini attempt in seconds
+    GEMINI_MAX_OUTPUT_TOKENS: int = Field(default=1500)  # Max tokens for Gemini generation
+    GEMINI_THINKING_LEVEL: str = Field(default="minimal")  # Thinking level: "minimal", "low", "medium", or "high"
     LLM_FALLBACK: str = Field(default="ollama")
 
     # EmbeddingConfig fields
@@ -121,6 +123,20 @@ class Settings(BaseSettings):
         if not v or len(v.strip()) == 0:
             raise ValueError("CHROMA_PERSIST_DIR must be a non-empty directory path.")
         return v
+
+    @field_validator("GEMINI_THINKING_LEVEL")
+    @classmethod
+    def validate_thinking_level(cls, v: str) -> str:
+        if not v:
+            return ""
+        level = v.lower()
+        allowed_levels = {"", "minimal", "low", "medium", "high"}
+        if level not in allowed_levels:
+            raise ValueError(
+                f"GEMINI_THINKING_LEVEL must be one of: {', '.join(sorted(allowed_levels))}. "
+                f"Got: '{v}'"
+            )
+        return level
 
     # Sub-config instance generators
     @property
