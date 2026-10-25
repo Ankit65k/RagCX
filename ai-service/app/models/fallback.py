@@ -338,8 +338,8 @@ class FallbackProvider(LLMProvider):
         """Try Ollama as final fallback for chat() with remaining timeout."""
         try:
             logger.info(f"[FallbackProvider] Trying Ollama as final fallback (reason: {reason})")
-            # OllamaProvider currently doesn't accept timeout, but we track it for logging
-            result = await self.ollama.chat(messages, format)
+            # Pass the remaining timeout to Ollama for proper resource budgeting
+            result = await self.ollama.chat(messages, format, timeout=timeout)
             self._copy_metrics(self.ollama)
             logger.info(f"[FallbackProvider] Chat served by Ollama with {timeout:.1f}s remaining")
             return result
