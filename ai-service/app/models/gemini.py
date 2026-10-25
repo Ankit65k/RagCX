@@ -134,17 +134,46 @@ class GeminiProvider(LLMProvider):
                 ),
             )
 
+            thinking_enabled = bool(settings.GEMINI_THINKING_LEVEL)
+
             # Add thinking config only if level is set
-            if settings.GEMINI_THINKING_LEVEL:
+            if thinking_enabled:
                 config.thinking_config = types.ThinkingConfig(
                     thinking_level=settings.GEMINI_THINKING_LEVEL
                 )
 
-            response = await self.client.models.generate_content(
-                model=self.model,
-                contents=contents,
-                config=config,
-            )
+            try:
+                response = await self.client.models.generate_content(
+                    model=self.model,
+                    contents=contents,
+                    config=config,
+                )
+            except Exception as e:
+                # Only retry if: 400 error AND thinking was enabled
+                if (hasattr(e, 'code') and e.code == 400 and thinking_enabled):
+                    elapsed = time.perf_counter() - start_time
+                    remaining = effective_timeout - elapsed
+
+                    if remaining >= 0.5:
+                        logger.warning(
+                            f"[Gemini] 400 error with thinking enabled, retrying without thinking. "
+                            f"model={self.model}, status={e.code}"
+                        )
+                        config.thinking_config = None
+                        per_attempt_timeout = min(settings.GEMINI_PER_ATTEMPT_CAP, remaining)
+                        config.http_options = types.HttpOptions(
+                            timeout=int(per_attempt_timeout * 1000),
+                            retry_options=types.HttpRetryOptions(attempts=1)
+                        )
+                        response = await self.client.models.generate_content(
+                            model=self.model,
+                            contents=contents,
+                            config=config,
+                        )
+                    else:
+                        self._map_api_error(e)
+                else:
+                    self._map_api_error(e)
 
             total_time_ms = (time.perf_counter() - start_time) * 1000
 
@@ -237,17 +266,46 @@ class GeminiProvider(LLMProvider):
             if format == "json":
                 config.response_mime_type = "application/json"
 
+            thinking_enabled = bool(settings.GEMINI_THINKING_LEVEL)
+
             # Add thinking config only if level is set
-            if settings.GEMINI_THINKING_LEVEL:
+            if thinking_enabled:
                 config.thinking_config = types.ThinkingConfig(
                     thinking_level=settings.GEMINI_THINKING_LEVEL
                 )
 
-            response = await self.client.models.generate_content(
-                model=self.model,
-                contents=contents,
-                config=config,
-            )
+            try:
+                response = await self.client.models.generate_content(
+                    model=self.model,
+                    contents=contents,
+                    config=config,
+                )
+            except Exception as e:
+                # Only retry if: 400 error AND thinking was enabled
+                if (hasattr(e, 'code') and e.code == 400 and thinking_enabled):
+                    elapsed = time.perf_counter() - start_time
+                    remaining = effective_timeout - elapsed
+
+                    if remaining >= 0.5:
+                        logger.warning(
+                            f"[Gemini] 400 error with thinking enabled, retrying without thinking. "
+                            f"model={self.model}, status={e.code}"
+                        )
+                        config.thinking_config = None
+                        per_attempt_timeout = min(settings.GEMINI_PER_ATTEMPT_CAP, remaining)
+                        config.http_options = types.HttpOptions(
+                            timeout=int(per_attempt_timeout * 1000),
+                            retry_options=types.HttpRetryOptions(attempts=1)
+                        )
+                        response = await self.client.models.generate_content(
+                            model=self.model,
+                            contents=contents,
+                            config=config,
+                        )
+                    else:
+                        self._map_api_error(e)
+                else:
+                    self._map_api_error(e)
 
             total_time_ms = (time.perf_counter() - start_time) * 1000
 
