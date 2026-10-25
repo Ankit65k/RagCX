@@ -63,8 +63,6 @@ class GeminiProvider(LLMProvider):
     # Configuration constants (in SECONDS)
     DEFAULT_TIMEOUT: float = 30.0  # seconds
     MAX_TIMEOUT: float = 60.0  # seconds
-    GEMINI_TOTAL_BUDGET: float = 25.0  # Total time budget for Gemini attempts
-    GEMINI_PER_ATTEMPT_CAP: float = 15.0  # Cap per individual Gemini attempt
 
     def __init__(self, model: str) -> None:
         self.model = model
@@ -128,23 +126,24 @@ class GeminiProvider(LLMProvider):
             # Configure generation - temperature 0.2, max 1000 tokens
             config = types.GenerateContentConfig(
                 temperature=0.2,
-                max_output_tokens=1000,
+                max_output_tokens=settings.GEMINI_MAX_OUTPUT_TOKENS,
                 response_modalities=["TEXT"],
+                http_options=types.HttpOptions(
+                    timeout=int(min(settings.GEMINI_PER_ATTEMPT_CAP, effective_timeout) * 1000),
+                    retry_options=types.HttpRetryOptions(attempts=1)
+                ),
             )
 
-            # Time budget: cap individual attempt at 15s, total Gemini budget at 25s
-            per_attempt_timeout = min(self.GEMINI_PER_ATTEMPT_CAP, effective_timeout)
-            sdk_timeout_ms = int(per_attempt_timeout * 1000)
-            http_options = types.HttpOptions(
-                timeout=sdk_timeout_ms,
-                retry_options=types.HttpRetryOptions(attempts=1)
-            )
+            # Add thinking config only if level is set
+            if settings.GEMINI_THINKING_LEVEL:
+                config.thinking_config = types.ThinkingConfig(
+                    thinking_level=settings.GEMINI_THINKING_LEVEL
+                )
 
             response = await self.client.models.generate_content(
                 model=self.model,
                 contents=contents,
                 config=config,
-                http_options=http_options,
             )
 
             total_time_ms = (time.perf_counter() - start_time) * 1000
@@ -226,26 +225,28 @@ class GeminiProvider(LLMProvider):
             # Configure generation
             config = types.GenerateContentConfig(
                 temperature=0.2,
-                max_output_tokens=1000,
+                max_output_tokens=settings.GEMINI_MAX_OUTPUT_TOKENS,
                 response_modalities=["TEXT"],
+                http_options=types.HttpOptions(
+                    timeout=int(min(settings.GEMINI_PER_ATTEMPT_CAP, effective_timeout) * 1000),
+                    retry_options=types.HttpRetryOptions(attempts=1)
+                ),
             )
 
+            # Handle JSON output format
             if format == "json":
                 config.response_mime_type = "application/json"
 
-            # Time budget: cap individual attempt at 15s, total Gemini budget at 25s
-            per_attempt_timeout = min(self.GEMINI_PER_ATTEMPT_CAP, effective_timeout)
-            sdk_timeout_ms = int(per_attempt_timeout * 1000)
-            http_options = types.HttpOptions(
-                timeout=sdk_timeout_ms,
-                retry_options=types.HttpRetryOptions(attempts=1)
-            )
+            # Add thinking config only if level is set
+            if settings.GEMINI_THINKING_LEVEL:
+                config.thinking_config = types.ThinkingConfig(
+                    thinking_level=settings.GEMINI_THINKING_LEVEL
+                )
 
             response = await self.client.models.generate_content(
                 model=self.model,
                 contents=contents,
                 config=config,
-                http_options=http_options,
             )
 
             total_time_ms = (time.perf_counter() - start_time) * 1000
