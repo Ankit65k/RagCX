@@ -1,6 +1,7 @@
 import os
 from typing import List, Literal, Optional
 from pydantic import Field, field_validator, ValidationError
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app.core.config.app_config import AppConfig
@@ -45,6 +46,7 @@ class Settings(BaseSettings):
     REDIS_HEALTH_TIMEOUT: float = 2.0
 
     # OllamaConfig fields
+    LLM_PROVIDER: str = Field(default="ollama")
     OLLAMA_BASE_URL: str = Field(default="http://localhost:11434")
     OLLAMA_CHAT_MODEL: str = Field(default="llama3.2:1b")
     OLLAMA_EMBED_MODEL: str = Field(default="nomic-embed-text")
@@ -56,6 +58,12 @@ class Settings(BaseSettings):
     OLLAMA_KEEP_ALIVE: str = "30m"
     OLLAMA_STREAMING: bool = False
     OLLAMA_NUM_PREDICT: int = 300
+    GEMINI_API_KEY: SecretStr = Field(default=SecretStr(""))
+    GEMINI_MODEL: str = Field(default="")
+    GEMINI_FALLBACK_MODEL: str = Field(default="")
+    GEMINI_TOTAL_BUDGET: float = Field(default=25.0)  # Total time budget for Gemini attempts in seconds
+    GEMINI_PER_ATTEMPT_CAP: float = Field(default=15.0)  # Cap per individual Gemini attempt in seconds
+    LLM_FALLBACK: str = Field(default="ollama")
 
     # EmbeddingConfig fields
     EMBEDDING_PROVIDER: str = Field(default="Ollama")
