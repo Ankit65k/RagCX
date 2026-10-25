@@ -31,7 +31,7 @@ from app.workflows.definitions.suggested_questions import build_suggested_questi
 from app.embeddings.service import EmbeddingService
 from app.vector_store.base import VectorStore
 from app.retrievers.base import Retriever
-from app.models.ollama import OllamaProvider
+from app.models.base import LLMProvider
 from app.questions.pipeline import QuestionGenerationPipeline
 from app.memory.manager import MemoryManager
 
@@ -49,7 +49,7 @@ class WorkflowFactory:
         embedding_service: EmbeddingService,
         vector_store: VectorStore,
         retriever: Retriever,
-        llm_provider: OllamaProvider,
+        llm_provider: LLMProvider,
         question_generation_pipeline: QuestionGenerationPipeline,
         memory_manager: MemoryManager,
     ) -> WorkflowEngine:
