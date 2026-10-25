@@ -4,7 +4,7 @@ from typing import Any, Dict
 
 from app.workflows.base import WorkflowNode
 from app.workflows.exceptions import NodeExecutionError
-from app.models.ollama import OllamaProvider
+from app.models.base import LLMProvider
 from app.rag.models import LLMStructuredResponse
 from app.memory.manager import MemoryManager
 from app.memory.models import MessageRole
@@ -14,14 +14,14 @@ logger = logging.getLogger("app")
 
 class GenerateAnswerNode(WorkflowNode):
     """
-    Calls the LLM via OllamaProvider to generate a grounded answer from the prompt.
+    Calls the LLM to generate a grounded answer from the prompt.
     Stores the structured response fields in state and appends the assistant answer to memory.
     This is the ONLY node in the system that invokes the chat LLM.
     """
 
     node_name = "generate_answer"
 
-    def __init__(self, llm_provider: OllamaProvider, memory_manager: MemoryManager) -> None:
+    def __init__(self, llm_provider: LLMProvider, memory_manager: MemoryManager) -> None:
         self.llm_provider = llm_provider
         self.memory_manager = memory_manager
 
@@ -44,8 +44,8 @@ class GenerateAnswerNode(WorkflowNode):
             llm_total_ms = (time.perf_counter() - llm_start) * 1000
             logger.info(f"[{self.node_name}] LLM call completed in {llm_total_ms:.1f}ms total")
 
-            # Log detailed Ollama metrics
-            metrics = self.llm_provider.last_metrics
+            # Log detailed LLM metrics
+            metrics = getattr(self.llm_provider, "last_metrics", None)
             if metrics:
                 logger.info(
                     f"[{self.node_name}] TIMING BREAKDOWN:\n"
