@@ -16,7 +16,7 @@ class LLMProvider(ABC):
         pass
 
     @abstractmethod
-    async def chat(self, messages: List[Dict[str, str]], format: Optional[str] = None) -> str:
+    async def chat(self, messages: List[Dict[str, str]], format: Optional[str] = None, timeout: float = 60.0) -> str:
         """
         Executes a multi-turn chat interaction.
         """
