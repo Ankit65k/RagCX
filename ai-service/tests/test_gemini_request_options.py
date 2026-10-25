@@ -45,6 +45,9 @@ class TestGeminiRequestOptions:
         # Mock API key
         with patch('app.models.gemini.settings') as mock_settings:
             mock_settings.GEMINI_API_KEY.get_secret_value.return_value = "test-key"
+            mock_settings.GEMINI_PER_ATTEMPT_CAP = 20.0
+            mock_settings.GEMINI_MAX_OUTPUT_TOKENS = 1500
+            mock_settings.GEMINI_THINKING_LEVEL = "minimal"
 
             # Create provider
             provider = GeminiProvider(model="gemini-2.0-flash")
@@ -60,10 +63,11 @@ class TestGeminiRequestOptions:
 
         # Get the actual call arguments
         call_args = mock_model.call_args
+        assert call_args is not None, "generate_content was never called"
 
         # Extract http_options from kwargs
         kwargs = call_args[1] if call_args else {}
-        http_options = kwargs.get('http_options')
+        http_options = kwargs['config'].http_options
 
         # Assert http_options was passed
         assert http_options is not None
@@ -91,6 +95,9 @@ class TestGeminiRequestOptions:
         # Mock API key
         with patch('app.models.gemini.settings') as mock_settings:
             mock_settings.GEMINI_API_KEY.get_secret_value.return_value = "test-key"
+            mock_settings.GEMINI_PER_ATTEMPT_CAP = 20.0
+            mock_settings.GEMINI_MAX_OUTPUT_TOKENS = 1500
+            mock_settings.GEMINI_THINKING_LEVEL = "minimal"
 
             # Create provider
             provider = GeminiProvider(model="gemini-2.0-flash")
@@ -108,10 +115,11 @@ class TestGeminiRequestOptions:
 
         # Get the actual call arguments
         call_args = mock_model.call_args
+        assert call_args is not None, "generate_content was never called"
 
         # Extract http_options from kwargs
         kwargs = call_args[1] if call_args else {}
-        http_options = kwargs.get('http_options')
+        http_options = kwargs['config'].http_options
 
         # Assert http_options was passed
         assert http_options is not None
@@ -126,16 +134,15 @@ class TestGeminiRequestOptions:
 
     def test_time_budget_constants_exist(self):
         """GeminiProvider should have time budget constants."""
-        assert hasattr(GeminiProvider, 'GEMINI_TOTAL_BUDGET')
-        assert hasattr(GeminiProvider, 'GEMINI_PER_ATTEMPT_CAP')
+        from app.core.config.settings import Settings
 
-        # Constants should be in seconds
-        assert GeminiProvider.GEMINI_TOTAL_BUDGET == 25.0  # 25 seconds total
-        assert GeminiProvider.GEMINI_PER_ATTEMPT_CAP == 15.0  # 15 seconds per attempt
+        # Check defaults in Settings model_fields (not class constants)
+        assert Settings.model_fields["GEMINI_TOTAL_BUDGET"].default == 30.0
+        assert Settings.model_fields["GEMINI_PER_ATTEMPT_CAP"].default == 20.0
 
     @patch('google.genai.Client')
     def test_generate_respects_per_attempt_cap(self, mock_genai_client):
-        """generate() should respect the per-attempt cap of 15 seconds."""
+        """generate() should respect the per-attempt cap of 20 seconds."""
         # Create mocks
         mock_client = Mock()
         mock_async_client = AsyncMock()
@@ -148,11 +155,14 @@ class TestGeminiRequestOptions:
         # Mock API key
         with patch('app.models.gemini.settings') as mock_settings:
             mock_settings.GEMINI_API_KEY.get_secret_value.return_value = "test-key"
+            mock_settings.GEMINI_PER_ATTEMPT_CAP = 20.0
+            mock_settings.GEMINI_MAX_OUTPUT_TOKENS = 1500
+            mock_settings.GEMINI_THINKING_LEVEL = "minimal"
 
             # Create provider
             provider = GeminiProvider(model="gemini-2.0-flash")
 
-            # Call generate with a large timeout (should be capped at 15s)
+            # Call generate with a large timeout (should be capped at 20s)
             try:
                 import asyncio
                 asyncio.run(provider.generate("test prompt", timeout=60.0))
@@ -161,14 +171,15 @@ class TestGeminiRequestOptions:
 
         # Get the actual call arguments
         call_args = mock_model.call_args
+        assert call_args is not None, "generate_content was never called"
 
         # Extract http_options from kwargs
         kwargs = call_args[1] if call_args else {}
-        http_options = kwargs.get('http_options')
+        http_options = kwargs['config'].http_options
 
-        # HttpOptions should have timeout of 15000ms (15s cap)
+        # HttpOptions should have timeout of 20000ms (20s cap)
         assert http_options is not None
-        assert http_options.timeout == 15000  # 15 seconds in milliseconds
+        assert http_options.timeout == 20000  # 20 seconds in milliseconds
 
     @patch('google.genai.Client')
     def test_generate_with_small_timeout(self, mock_genai_client):
@@ -185,6 +196,9 @@ class TestGeminiRequestOptions:
         # Mock API key
         with patch('app.models.gemini.settings') as mock_settings:
             mock_settings.GEMINI_API_KEY.get_secret_value.return_value = "test-key"
+            mock_settings.GEMINI_PER_ATTEMPT_CAP = 20.0
+            mock_settings.GEMINI_MAX_OUTPUT_TOKENS = 1500
+            mock_settings.GEMINI_THINKING_LEVEL = "minimal"
 
             # Create provider
             provider = GeminiProvider(model="gemini-2.0-flash")
@@ -198,10 +212,11 @@ class TestGeminiRequestOptions:
 
         # Get the actual call arguments
         call_args = mock_model.call_args
+        assert call_args is not None, "generate_content was never called"
 
         # Extract http_options from kwargs
         kwargs = call_args[1] if call_args else {}
-        http_options = kwargs.get('http_options')
+        http_options = kwargs['config'].http_options
 
         # HttpOptions should have timeout of 5000ms (5 seconds)
         assert http_options is not None
