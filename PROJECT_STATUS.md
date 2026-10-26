@@ -1,7 +1,42 @@
 # RagCX Project Status
 
-**Last Updated**: 2026-10-10 @ 09:25 UTC  
-**Session**: Chat Timeout Root Cause Fix & Prevention
+**Last Updated**: 2026-10-25 @ 06:17 UTC  
+**Session**: LLM Provider Abstraction - GenerateAnswerNode Refactor
+
+---
+
+## 🔄 In Progress (2026-10-25)
+
+### Pending: GenerateAnswerNode LLM Provider Abstraction
+
+**File**: `ai-service/app/workflows/nodes/chat/answer.py`
+
+**Changes to Apply** (awaiting approval):
+
+1. **Import change**: `OllamaProvider` → `LLMProvider` (from `app.models.base`)
+2. **Type annotation**: Line 24 parameter type changed to `LLMProvider`
+3. **Docstring update**: Line 17 - removed "via OllamaProvider" reference
+4. **Metrics access**: Line 48 - changed to `getattr(self.llm_provider, "last_metrics", None)`
+5. **Log header**: Line 47 - "Ollama metrics" → "LLM metrics"
+
+**Diff Summary**:
+```diff
+- from app.models.ollama import OllamaProvider
++ from app.models.base import LLMProvider
+
+- def __init__(self, llm_provider: OllamaProvider, memory_manager: MemoryManager) -> None:
++ def __init__(self, llm_provider: LLMProvider, memory_manager: MemoryManager) -> None:
+
+- metrics = self.llm_provider.last_metrics
++ metrics = getattr(self.llm_provider, "last_metrics", None)
+
+- # Log detailed Ollama metrics
++ # Log detailed LLM metrics
+```
+
+**Reason**: Makes `GenerateAnswerNode` provider-agnostic to support multiple LLM backends (Ollama, Gemini, etc.)
+
+**Next Step**: Apply changes after user approval
 
 ---
 
