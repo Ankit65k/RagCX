@@ -138,3 +138,5 @@ backend/uploads/
 
 ECC/
 ui-ux-pro-max-skill/
+
+!.env.example
