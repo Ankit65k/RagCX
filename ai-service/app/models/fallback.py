@@ -50,6 +50,14 @@ class FallbackProvider(LLMProvider):
         self.ollama = ollama_provider
         self.last_metrics: Dict[str, float] = {}
 
+    @property
+    def model(self) -> str:
+        """
+        Read-only property that returns the primary provider's model name.
+        Used by pipelines that read self.llm_provider.model.
+        """
+        return getattr(self.primary, "model", "unknown")
+
     async def generate(self, prompt: str, system_prompt: Optional[str] = None, timeout: float = 60.0) -> str:
         """
         Generate text with fallback logic.

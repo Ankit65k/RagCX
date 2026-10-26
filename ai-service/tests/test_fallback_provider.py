@@ -24,6 +24,7 @@ class FakeProvider(LLMProvider):
         self.chat_calls = 0
         self.should_fail_with: Optional[Exception] = None
         self.last_metrics: Dict[str, float] = {"test_metric": 123.0}
+        self.model = name  # Model name for testing
 
     def configure_failure(self, exception: Exception):
         """Configure this provider to raise the given exception."""
@@ -364,6 +365,14 @@ async def test_metrics_from_ollama(fallback_provider, providers):
     await fallback_provider.generate("test prompt")
 
     assert fallback_provider.last_metrics == {"ollama_metric": 555.0}
+
+
+@pytest.mark.asyncio
+async def test_model_property_returns_primary_model(fallback_provider, providers):
+    """FallbackProvider.model returns the primary provider's model name."""
+    # The primary provider is "primary_gemini", so model should match
+    assert fallback_provider.model == "primary_gemini"
+    assert fallback_provider.model == providers["primary"].model
 
 
 # =============================================================================
