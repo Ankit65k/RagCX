@@ -65,7 +65,6 @@ class Settings(BaseSettings):
     GEMINI_PER_ATTEMPT_CAP: float = Field(default=20.0)  # Cap per individual Gemini attempt in seconds
     GEMINI_MAX_OUTPUT_TOKENS: int = Field(default=1500)  # Max tokens for Gemini generation
     GEMINI_THINKING_LEVEL: str = Field(default="minimal")  # Thinking level: "minimal", "low", "medium", or "high"
-    LLM_FALLBACK: str = Field(default="ollama")
 
     # EmbeddingConfig fields
     EMBEDDING_PROVIDER: str = Field(default="Ollama")

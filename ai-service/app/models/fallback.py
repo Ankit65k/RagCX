@@ -20,8 +20,8 @@ class FallbackProvider(LLMProvider):
     Fallback provider that tries Gemini models first, then falls back to Ollama.
 
     Time budget rules:
-    - Gemini budget: GEMINI_TOTAL_BUDGET (default 25s), never exceeds half of caller's total timeout
-    - Each Gemini attempt capped at GEMINI_PER_ATTEMPT_CAP (default 15s)
+    - Gemini budget: GEMINI_TOTAL_BUDGET (default 30s), never exceeds half of caller's total timeout
+    - Each Gemini attempt capped at GEMINI_PER_ATTEMPT_CAP (default 20s)
     - Ollama gets all remaining time (total_timeout minus time spent), capped at AI_SERVICE_LIMIT (110s)
     - Gemini is always tried when caller's timeout is at least ~10s
 
