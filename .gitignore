@@ -143,3 +143,6 @@ ui-ux-pro-max-skill/
 !.env.example
 
 .mcp.json
+
+frontend/playwright-report/
+frontend/test-results/
