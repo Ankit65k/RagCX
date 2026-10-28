@@ -5,7 +5,13 @@ const prisma = new PrismaClient();
 
 async function main() {
   const email = 'admin12@gmail.com';
-  const plainPassword = 'Admin@12345678';
+  const plainPassword = process.env.ADMIN_PASSWORD;
+
+  if (!plainPassword) {
+    console.error('ERROR: ADMIN_PASSWORD environment variable is not set.');
+    console.error('Please add ADMIN_PASSWORD=YOUR_ADMIN_PASSWORD_HERE to backend/.env');
+    process.exit(1);
+  }
 
   const passwordHash = await bcrypt.hash(plainPassword, 12);
 
