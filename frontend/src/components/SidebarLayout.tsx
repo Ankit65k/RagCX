@@ -9,7 +9,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   MessageSquare,
   FileText,
-  Settings,
+  FileUp,
   LogOut,
   PanelLeftClose,
   PanelLeft,
@@ -26,7 +26,7 @@ const navItems = [
   { label: "Dashboard",          icon: LayoutDashboard, path: "/" },
   { label: "AI Chat",            icon: MessageSquare,   path: "/chat" },
   { label: "Documents",          icon: FileText,        path: "/documents" },
-  { label: "Settings",           icon: Settings,        path: "/settings" },
+  { label: "Upload PDF",         icon: FileUp,          path: "/documents/upload" },
 ];
 
 // Map path → page title shown in the top bar
@@ -34,7 +34,7 @@ const pageTitles: Record<string, string> = {
   "/":          "Dashboard",
   "/chat":      "AI Document Chat",
   "/documents": "Document Library",
-  "/settings":  "System Settings",
+  "/documents/upload": "Upload PDF",
 };
 
 export default function SidebarLayout({ children }: SidebarLayoutProps) {

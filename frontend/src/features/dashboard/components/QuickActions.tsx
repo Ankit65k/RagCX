@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { MessageSquare, UploadCloud, FileText, Settings } from "lucide-react";
+import { MessageSquare, UploadCloud, FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const actions = [
@@ -24,13 +24,6 @@ const actions = [
     desc: "Manage documents",
     icon: FileText,
     path: "/documents",
-    isPrimary: false,
-  },
-  {
-    label: "Settings",
-    desc: "Configure the system",
-    icon: Settings,
-    path: "/settings",
     isPrimary: false,
   },
 ];
