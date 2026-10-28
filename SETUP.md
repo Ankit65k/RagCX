@@ -187,7 +187,7 @@ npm run dev
 ## 7. Verify it works
 
 1. Check backend health: http://localhost:4000/api/v1/health
-2. Check AI service health: http://localhost:8000/health  
+2. Check AI service health: http://localhost:8000/api/v1/health  
 3. Open frontend: http://localhost:3000
 4. Register a new account
 5. Upload a PDF document
