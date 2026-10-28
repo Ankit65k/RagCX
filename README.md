@@ -31,7 +31,7 @@ An enterprise-grade, high-performance Retrieval-Augmented Generation (RAG) platf
 
 ## Local Environment (already set up on this machine)
 
-- **PostgreSQL**: database `ragcx` on port 5432. Note: actual working password is `12345`, not the `postgres` shown in the original README example — `.env` DATABASE_URL should use `postgresql://postgres:12345@localhost:5432/ragcx`.
+- **PostgreSQL**: database `ragcx` on port 5432. Use your own PostgreSQL password in DATABASE_URL, e.g. postgresql://postgres:YOUR_DB_PASSWORD_HERE@localhost:5432/ragcx.
 - **Redis**: running via Memurai on port 6379 (Windows-native Redis alternative).
 - **Ollama**: installed, `llama3` model pulled, running on port 11434.
 - **Known fixes already applied**: missing `src/core/env/index.ts` module was created; a PORT env leak from the omniroute shell environment was fixed with `dotenv.config({ override: true })`; an incorrect `requireRole('ADMIN')` check on document upload was replaced with `requirePermission(Permission.DOCUMENTS_UPLOAD)` — check for the same bug pattern on other routes before assuming they're correct.
