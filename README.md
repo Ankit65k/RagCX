@@ -2,6 +2,8 @@
 
 An enterprise-grade, high-performance Retrieval-Augmented Generation (RAG) platform. Administrators can upload PDF files to build a vector knowledge base, and users can ask questions through a chat interface. The system uses a microservice architecture communicating via Redis Pub/Sub.
 
+Setup instructions: see [SETUP.md](SETUP.md).
+
 ## System Architecture                   ┌─────────────────────────┐
                    │     Next.js Frontend    │
                    └────────────┬────────────┘
