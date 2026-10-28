@@ -184,6 +184,8 @@ npm run dev
 # Runs on http://localhost:3000
 ```
 
+Shortcut: with Ollama, PostgreSQL and Redis running, you can start all three services at once with `.\scripts\start-all.ps1`. If PowerShell blocks it, run: `powershell -ExecutionPolicy Bypass -File .\scripts\start-all.ps1`
+
 ## 7. Verify it works
 
 1. Check backend health: http://localhost:4000/api/v1/health
